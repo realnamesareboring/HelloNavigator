@@ -1,0 +1,70 @@
+# Site settings
+title: "The Navigator's Codebook"
+description: "An Interactive Cybersecurity Adventure - Help X.I.S. return home while mastering cybersecurity skills"
+baseurl: "/navigator-codebook"  # Change to your repo name
+url: "https://your-username.github.io"  # Change to your GitHub Pages URL
+
+# Build settings
+markdown: kramdown
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Sass configuration
+sass:
+  style: compressed
+  sass_dir: assets/css
+
+# Exclude from processing
+exclude:
+  - node_modules
+  - .git
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - .jekyll-cache
+  - vendor
+  - "*.gem"
+  - "*.gemspec"
+
+# Include assets
+include:
+  - assets
+
+# Jekyll environment
+environment: production
+
+# Custom variables for Navigator's Codebook
+retro_theme:
+  primary_color: "#00ffff"
+  secondary_color: "#ff8000"
+  accent_color: "#ff0080"
+  background_dark: "#000811"
+
+# Module configuration
+modules:
+  - id: "identity-defense"
+    name: "Identity Defense Grid"
+    icon: "🔐"
+    description: "Master crew identification, password security, social engineering defense, and two-factor authentication"
+    challenge_count: 4
+    estimated_time: "45-60 minutes"
+  - id: "network-defense"
+    name: "Network Defense Array"
+    icon: "🌐"
+    description: "Secure ship communications through traffic analysis, firewall configuration, and WiFi security"
+    challenge_count: 4
+    estimated_time: "45-60 minutes"
+  - id: "intelligence-hub"
+    name: "Intelligence Gathering Hub"
+    icon: "🔍"
+    description: "Learn reconnaissance techniques including information gathering and digital footprints"
+    challenge_count: 4
+    estimated_time: "45-60 minutes"
+  - id: "cryptographic-core"
+    name: "Cryptographic Core"
+    icon: "🔐"
+    description: "Restore encrypted communications using cipher techniques and key exchange protocols"
+    challenge_count: 4
+    estimated_time: "45-60 minutes"

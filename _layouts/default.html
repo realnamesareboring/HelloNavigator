@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include head.html %}
+</head>
+<body class="{{ page.body_class | default: 'default' }}">
+    {% include retro-effects.html %}
+    
+    <div class="site-wrapper">
+        {{ content }}
+    </div>
+
+    <!-- Global JavaScript -->
+    <script src="{{ '/assets/js/user-progress.js' | relative_url }}"></script>
+    
+    {% if page.terminal_mode %}
+    <script src="{{ '/assets/js/challenge-loader.js' | relative_url }}"></script>
+    <script src="{{ '/assets/js/hint-system.js' | relative_url }}"></script>
+    <script src="{{ '/assets/js/terminal-engine.js' | relative_url }}"></script>
+    {% endif %}
+    
+    <!-- Page-specific JavaScript -->
+    {% if page.custom_js %}
+        {% for js_file in page.custom_js %}
+        <script src="{{ js_file | relative_url }}"></script>
+        {% endfor %}
+    {% endif %}
+</body>
+</html>

@@ -1,160 +1,271 @@
-        // Unscrambling title effect with alien symbols
-        function scrambleTitle() {
-            const title = document.getElementById('scrambleTitle');
-            const originalText = 'THE NAVIGATOR\'S CODEBOOK';
-            const alienChars = ['◊', '◈', '◇', '◉', '◎', '●', '◐', '◑', '◒', '◓', '◔', '◕', '◖', '◗', '◘', '◙', '◚', '◛', '◜', '◝', '◞', '◟', '◠', '◡', '⬟', '⬠', '⬡', '⬢', '⬣', '⬤', '⬥', '⬦'];
+// =============================================================================
+// MAIN.JS - Landing Page Functionality for Navigator's Codebook
+// =============================================================================
+
+class NavigatorLanding {
+    constructor() {
+        this.disclaimerAccepted = false;
+        this.scrambleInterval = null;
+        this.init();
+    }
+
+    init() {
+        console.log('🛸 Initializing Navigator\'s Codebook...');
+        
+        // Show disclaimer on load
+        this.showDisclaimer();
+        
+        // Initialize title scramble effect
+        this.initializeTitleScramble();
+        
+        // Setup event listeners
+        this.setupEventListeners();
+        
+        console.log('✅ Navigator landing page initialized');
+    }
+
+    // =============================================================================
+    // DISCLAIMER MODAL
+    // =============================================================================
+
+    showDisclaimer() {
+        const modal = document.getElementById('disclaimerModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    hideDisclaimer() {
+        const modal = document.getElementById('disclaimerModal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    acceptDisclaimer() {
+        console.log('✅ Mission parameters accepted');
+        this.disclaimerAccepted = true;
+        this.hideDisclaimer();
+        this.activateSystemsSequence();
+    }
+
+    declineDisclaimer() {
+        console.log('❌ Mission declined');
+        alert('Mission aborted. X.I.S. cannot return home without your assistance.');
+        // Could redirect to an alternative page or show alternative content
+    }
+
+    // =============================================================================
+    // TITLE SCRAMBLE EFFECT
+    // =============================================================================
+
+    initializeTitleScramble() {
+        const titleElement = document.getElementById('scrambleTitle');
+        if (!titleElement) return;
+
+        const originalText = "THE NAVIGATOR'S CODEBOOK";
+        const alienSymbols = "ᚨᛒᚲᛞᛖᚠᚷᚺᛁᛃᛚᛗᚾᛟᛈᛋᛏᚢᚹᛃ⟨⟩◊◈◉☉⚡⚢⚣⚤⚦⚧⚪⚫";
+        
+        // Start with scrambled text
+        this.scrambleText(titleElement, alienSymbols, originalText.length);
+        
+        // After disclaimer is accepted, unscramble
+        this.waitForDisclaimer().then(() => {
+            setTimeout(() => {
+                this.unscrambleText(titleElement, originalText, alienSymbols);
+            }, 1000);
+        });
+    }
+
+    scrambleText(element, symbols, length) {
+        let scrambledText = '';
+        for (let i = 0; i < length; i++) {
+            scrambledText += symbols[Math.floor(Math.random() * symbols.length)];
+        }
+        element.textContent = scrambledText;
+    }
+
+    async unscrambleText(element, targetText, symbols) {
+        const steps = 30;
+        const stepDelay = 100;
+        
+        for (let step = 0; step <= steps; step++) {
+            let currentText = '';
             
-            title.innerHTML = '';
-            
-            // First show alien symbols
-            for (let i = 0; i < originalText.length; i++) {
-                const span = document.createElement('span');
-                span.className = 'scramble-char';
-                span.style.animationDelay = `${i * 0.15}s`;
+            for (let i = 0; i < targetText.length; i++) {
+                const progress = step / steps;
+                const charProgress = Math.max(0, (progress - (i / targetText.length)) * 2);
                 
-                if (originalText[i] === ' ') {
-                    span.innerHTML = '&nbsp;';
+                if (charProgress >= 1) {
+                    currentText += targetText[i];
+                } else if (charProgress > 0.5) {
+                    // Occasionally show the correct character
+                    currentText += Math.random() > 0.3 ? targetText[i] : symbols[Math.floor(Math.random() * symbols.length)];
                 } else {
-                    // Start with alien symbol
-                    let alienChar = alienChars[Math.floor(Math.random() * alienChars.length)];
-                    span.textContent = alienChar;
-                    
-                    // Multiple transformation stages
-                    setTimeout(() => {
-                        span.textContent = alienChars[Math.floor(Math.random() * alienChars.length)];
-                    }, 500 + (i * 50));
-                    
-                    setTimeout(() => {
-                        span.textContent = alienChars[Math.floor(Math.random() * alienChars.length)];
-                    }, 1000 + (i * 50));
-                    
-                    setTimeout(() => {
-                        span.textContent = alienChars[Math.floor(Math.random() * alienChars.length)];
-                    }, 1500 + (i * 50));
-                    
-                    // Final reveal to English
-                    setTimeout(() => {
-                        span.textContent = originalText[i];
-                        span.classList.add('deciphered');
-                        
-                        // Add a brief flash effect
-                        span.style.textShadow = '0 0 5px #fff, 0 0 10px #ff8000';
-                        setTimeout(() => {
-                            span.style.textShadow = '0 0 2px #ff8000, 0 0 5px #ff8000';
-                        }, 200);
-                    }, 2000 + (i * 100));
+                    currentText += symbols[Math.floor(Math.random() * symbols.length)];
                 }
-                
-                title.appendChild(span);
             }
             
-            // Add completion effect
-            setTimeout(() => {
-                title.style.animation = 'pulse 2s ease-in-out';
-                setTimeout(() => {
-                    title.style.animation = 'none';
-                }, 2000);
-            }, 4000);
+            element.textContent = currentText;
+            await this.delay(stepDelay);
         }
         
-        // Show disclaimer immediately on page load
-        window.addEventListener('load', () => {
-            // Show the disclaimer modal immediately
-            showDisclaimer();
+        element.textContent = targetText;
+        console.log('🔤 Title unscrambled - Systems online');
+    }
+
+    async waitForDisclaimer() {
+        return new Promise((resolve) => {
+            const checkInterval = setInterval(() => {
+                if (this.disclaimerAccepted) {
+                    clearInterval(checkInterval);
+                    resolve();
+                }
+            }, 100);
         });
+    }
+
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // =============================================================================
+    // SYSTEM ACTIVATION SEQUENCE
+    // =============================================================================
+
+    async activateSystemsSequence() {
+        console.log('🚀 Activating ship systems...');
         
-        function showDisclaimer() {
-            const modal = document.getElementById('disclaimerModal');
-            modal.classList.add('show');
+        // Remove blur from main content
+        const mainContent = document.getElementById('mainContent');
+        if (mainContent) {
+            mainContent.classList.remove('content-blurred');
         }
         
-        function acceptDisclaimer() {
-            const modal = document.getElementById('disclaimerModal');
-            const mainContent = document.getElementById('mainContent');
-            
-            // Fade out modal and enable content
-            modal.style.animation = 'fadeOut 0.3s ease-out forwards';
-            
-            setTimeout(() => {
-                modal.style.display = 'none';
-                modal.classList.remove('show');
-                mainContent.classList.remove('content-blurred');
-                mainContent.style.filter = 'none';
-                mainContent.style.pointerEvents = 'auto';
-                
-                // Now start the title unscrambling effect after systems come online
-                setTimeout(() => {
-                    scrambleTitle();
-                }, 500);
-            }, 300);
+        // Add system activation effects
+        this.showSystemMessages();
+    }
+
+    async showSystemMessages() {
+        const messages = [
+            'X.I.S. AUTHENTICATION: VERIFIED',
+            'NAVIGATOR CREDENTIALS: ACCEPTED',
+            'SHIP SYSTEMS: INITIALIZING...',
+            'MISSION PARAMETERS: LOADED',
+            'CYBERSECURITY PROTOCOLS: ACTIVE',
+            'READY FOR ADVENTURE'
+        ];
+
+        // Create temporary message container
+        const messageContainer = this.createSystemMessageContainer();
+        
+        for (let i = 0; i < messages.length; i++) {
+            await this.delay(500);
+            this.addSystemMessage(messageContainer, messages[i]);
         }
         
-        function declineDisclaimer() {
-            // Show decline message and redirect
-            alert('🛸 Mission aborted. X.I.S. understands your decision.\n\nRedirecting to safe coordinates...');
-            
-            // Optional: redirect to a different page or close window
-            // window.location.href = 'https://example.com';
-            // Or just reload the page to start over
-            window.location.reload();
-        }
-        
-        function startMission() {
-            // Add retro computer startup effect
-            const button = document.querySelector('.start-button');
-            button.textContent = 'INITIALIZING...';
-            button.style.background = 'linear-gradient(45deg, #ff8000, #ff0080)';
-            
-            setTimeout(() => {
-                button.textContent = 'SYSTEMS ONLINE';
-                button.style.background = 'linear-gradient(45deg, #00ff00, #00ffff)';
-                
-                setTimeout(() => {
-                    alert('🚀 TRANSMISSION RECEIVED\n\nWelcome aboard, Navigator! Your cybersecurity training adventure begins now.\n\nX.I.S. awaits your assistance in restoring all ship systems.\n\nPrepare to become a true cyber guardian!');
-                    
-                    button.textContent = 'Initialize Navigation Systems';
-                    button.style.background = 'linear-gradient(45deg, #ff0080, #00ffff)';
-                }, 1000);
-            }, 1500);
-        }
-        
-        // Close modal when clicking outside of it
-        document.addEventListener('click', function(event) {
-            const modal = document.getElementById('disclaimerModal');
-            const modalContent = document.querySelector('.modal-content');
-            
-            if (event.target === modal && !modalContent.contains(event.target)) {
-                modal.classList.remove('show');
-            }
-        });
-        
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                const modal = document.getElementById('disclaimerModal');
-                modal.classList.remove('show');
-            }
-        });
-        
-        // Add pulse animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes pulse {
-                0%, 100% { transform: scale(1); }
-                50% { transform: scale(1.05); }
-            }
+        // Remove message container after delay
+        setTimeout(() => {
+            messageContainer.remove();
+        }, 3000);
+    }
+
+    createSystemMessageContainer() {
+        const container = document.createElement('div');
+        container.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 20, 40, 0.9);
+            border: 2px solid #00ffff;
+            padding: 1rem;
+            max-width: 300px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            color: #00ffff;
+            z-index: 3000;
+            backdrop-filter: blur(10px);
         `;
-        document.head.appendChild(style);
+        document.body.appendChild(container);
+        return container;
+    }
+
+    addSystemMessage(container, message) {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = `> ${message}`;
+        messageElement.style.cssText = `
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.3s ease;
+        `;
         
-        // Add some dynamic effects to module cards
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.module-card').forEach(card => {
-                card.addEventListener('mouseenter', () => {
-                    card.style.borderColor = '#ff8000';
+        container.appendChild(messageElement);
+        
+        // Animate in
+        setTimeout(() => {
+            messageElement.style.opacity = '1';
+            messageElement.style.transform = 'translateX(0)';
+        }, 50);
+    }
+
+    // =============================================================================
+    // NAVIGATION FUNCTIONS
+    // =============================================================================
+
+    navigateToModule(moduleId) {
+        console.log(`🎯 Navigating to module: ${moduleId}`);
+        window.location.href = `modules/${moduleId}.html`;
+    }
+
+    startMission() {
+        console.log('🚀 Starting mission - Navigating to bridge');
+        window.location.href = 'bridge.html';
+    }
+
+    // =============================================================================
+    // EVENT LISTENERS
+    // =============================================================================
+
+    setupEventListeners() {
+        // Global navigation functions
+        window.navigateToModule = (moduleId) => this.navigateToModule(moduleId);
+        window.startMission = () => this.startMission();
+        window.acceptDisclaimer = () => this.acceptDisclaimer();
+        window.declineDisclaimer = () => this.declineDisclaimer();
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                // Close any open modals
+                const modals = document.querySelectorAll('.modal-overlay');
+                modals.forEach(modal => {
+                    if (modal.style.display === 'flex') {
+                        modal.style.display = 'none';
+                    }
                 });
-                
-                card.addEventListener('mouseleave', () => {
-                    card.style.borderColor = '#00ffff';
-                });
-            });
+            }
         });
+        
+        // Prevent right-click context menu for immersion
+        document.addEventListener('contextmenu', (event) => {
+            event.preventDefault();
+        });
+    }
+}
+
+// =============================================================================
+// INITIALIZATION
+// =============================================================================
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    window.navigatorLanding = new NavigatorLanding();
+});
+
+// Also export for potential module usage
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = NavigatorLanding;
+}
