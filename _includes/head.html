@@ -13,6 +13,9 @@
 
 <!-- Main CSS -->
 <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+{% if page.body_class == 'bridge-interface' %}
+<link rel="stylesheet" href="{{ '/assets/css/bridge.css' | relative_url }}">
+{% endif %}
 
 <!-- Favicon (using emoji for now) -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛸</text></svg>">

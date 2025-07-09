@@ -1,0 +1,687 @@
+---
+---
+
+// =============================================================================
+// CHALLENGE INTERFACE STYLES
+// =============================================================================
+
+// Import base variables
+$primary-cyan: #00ffff;
+$secondary-orange: #ff8000;
+$accent-magenta: #ff0080;
+$accent-yellow: #ffff00;
+$dark-bg: #000811;
+$medium-bg: #001122;
+$light-bg: #002233;
+$bridge-green: #00ff41;
+$bridge-red: #ff0041;
+$warning-amber: #ffbf00;
+
+// =============================================================================
+// CHALLENGE LAYOUT
+// =============================================================================
+
+.challenge-interface {
+    background: 
+        radial-gradient(circle at 15% 85%, rgba(0, 255, 255, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 85% 15%, rgba(255, 0, 128, 0.05) 0%, transparent 50%),
+        linear-gradient(135deg, $dark-bg, $medium-bg, $light-bg);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.challenge-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+// =============================================================================
+// CHALLENGE HEADER
+// =============================================================================
+
+.challenge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: rgba(0, 20, 40, 0.9);
+    border: 2px solid $primary-cyan;
+    margin: 1rem 0;
+    clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 30px 100%, 0 calc(100% - 30px));
+    backdrop-filter: blur(10px);
+}
+
+.challenge-nav {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    
+    .nav-btn.back {
+        background: linear-gradient(135deg, #444, #666);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        font-family: 'Orbitron', sans-serif;
+        cursor: pointer;
+        clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+        transition: all 0.3s ease;
+        
+        &:hover {
+            background: linear-gradient(135deg, $secondary-orange, #cc6600);
+            transform: translateX(-3px);
+        }
+    }
+    
+    .challenge-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: $primary-cyan;
+        font-family: 'Share Tech Mono', monospace;
+        
+        .module-name {
+            color: $secondary-orange;
+            font-weight: 600;
+        }
+        
+        .separator {
+            color: #666;
+        }
+        
+        .challenge-name {
+            color: $primary-cyan;
+        }
+    }
+    
+    .challenge-progress {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        
+        .progress-text {
+            color: $accent-yellow;
+            font-size: 0.9rem;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .progress-bar-mini {
+            width: 100px;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid $accent-yellow;
+            border-radius: 4px;
+            overflow: hidden;
+            
+            .progress-fill-mini {
+                height: 100%;
+                background: linear-gradient(90deg, $bridge-green, $accent-yellow);
+                transition: width 0.3s ease;
+            }
+        }
+    }
+}
+
+.challenge-status {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    
+    .xp-display, .difficulty-indicator, .timer-display {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: $primary-cyan;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 0.9rem;
+    }
+    
+    .difficulty-stars {
+        display: flex;
+        gap: 2px;
+        
+        .star {
+            color: $accent-yellow;
+            
+            &.empty {
+                opacity: 0.3;
+            }
+        }
+    }
+    
+    .timer-display {
+        color: $warning-amber;
+    }
+}
+
+// =============================================================================
+// MAIN CHALLENGE LAYOUT
+// =============================================================================
+
+.challenge-main {
+    display: grid;
+    grid-template-columns: 300px 1fr 280px;
+    gap: 1.5rem;
+    flex: 1;
+    padding: 1rem 0;
+}
+
+// =============================================================================
+// MISSION PANEL (LEFT)
+// =============================================================================
+
+.mission-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.xis-communication-mini {
+    background: rgba(0, 30, 60, 0.8);
+    border: 2px solid $accent-magenta;
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+    padding: 1rem;
+    backdrop-filter: blur(10px);
+    
+    .xis-avatar-mini {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        .avatar-core-mini {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, $primary-cyan, $accent-magenta);
+            border-radius: 50%;
+            position: relative;
+            animation: miniGlow 3s ease-in-out infinite;
+            
+            &::before {
+                content: '🤖';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 1.2rem;
+            }
+        }
+        
+        .avatar-ring-mini {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 2px solid $secondary-orange;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: miniRotate 4s linear infinite;
+        }
+    }
+    
+    .xis-message-mini {
+        color: $primary-cyan;
+        font-size: 0.85rem;
+        line-height: 1.4;
+        text-align: center;
+    }
+}
+
+@keyframes miniGlow {
+    0%, 100% { box-shadow: 0 0 10px $primary-cyan; }
+    50% { box-shadow: 0 0 20px $accent-magenta; }
+}
+
+@keyframes miniRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.mission-brief, .objectives-list, .hints-panel {
+    background: rgba(0, 20, 40, 0.8);
+    border: 2px solid $primary-cyan;
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.section-title {
+    font-family: 'Orbitron', sans-serif;
+    color: $secondary-orange;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 5px $secondary-orange;
+}
+
+.brief-content {
+    color: $primary-cyan;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.objectives {
+    list-style: none;
+    padding: 0;
+    
+    .objective-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+        color: $primary-cyan;
+        font-size: 0.9rem;
+        
+        .objective-status {
+            color: $accent-yellow;
+            font-weight: bold;
+            width: 20px;
+            flex-shrink: 0;
+        }
+        
+        &.completed .objective-status {
+            color: $bridge-green;
+        }
+        
+        &.completed .objective-text {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+    }
+}
+
+.hint-btn, .walkthrough-btn {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, $accent-magenta, #cc0066);
+    color: white;
+    border: none;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    transition: all 0.3s ease;
+    
+    &:hover {
+        background: linear-gradient(135deg, #ff0080, $accent-magenta);
+        transform: translateY(-2px);
+    }
+    
+    .hint-count {
+        opacity: 0.8;
+        font-size: 0.7rem;
+    }
+}
+
+.walkthrough-btn {
+    background: linear-gradient(135deg, $primary-cyan, #0088cc);
+    
+    &:hover {
+        background: linear-gradient(135deg, #00ccff, $primary-cyan);
+    }
+}
+
+// =============================================================================
+// WORKSPACE PANEL (CENTER)
+// =============================================================================
+
+.workspace-panel {
+    background: rgba(0, 20, 40, 0.8);
+    border: 2px solid $primary-cyan;
+    clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 30px 100%, 0 calc(100% - 30px));
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+}
+
+.workspace-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 2px solid $primary-cyan;
+    background: rgba(0, 255, 255, 0.05);
+    
+    .workspace-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: $primary-cyan;
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 600;
+    }
+    
+    .workspace-controls {
+        display: flex;
+        gap: 0.5rem;
+        
+        .control-btn {
+            background: linear-gradient(135deg, #444, #666);
+            color: white;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            
+            &:hover {
+                background: linear-gradient(135deg, $secondary-orange, #cc6600);
+            }
+        }
+    }
+}
+
+.workspace-content {
+    flex: 1;
+    padding: 0;
+    overflow: hidden;
+}
+
+.challenge-workspace {
+    height: 100%;
+    min-height: 400px;
+}
+
+// =============================================================================
+// TERMINAL STYLES
+// =============================================================================
+
+.terminal-container {
+    height: 100%;
+    background: #0c0c0c;
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: 'Share Tech Mono', monospace;
+    
+    &.fullscreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 9999;
+        border-radius: 0;
+    }
+}
+
+.terminal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1a1a1a;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #333;
+    
+    .terminal-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: $primary-cyan;
+        font-size: 0.9rem;
+    }
+    
+    .terminal-controls {
+        display: flex;
+        gap: 0.5rem;
+        
+        .terminal-btn {
+            width: 20px;
+            height: 20px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            
+            &.minimize { background: $accent-yellow; color: #000; }
+            &.maximize { background: $bridge-green; color: #000; }
+            &.close { background: $bridge-red; color: #fff; }
+        }
+    }
+}
+
+.terminal-body {
+    height: calc(100% - 60px);
+    display: flex;
+    flex-direction: column;
+}
+
+.terminal-output {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    background: #0c0c0c;
+    color: $bridge-green;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    
+    .boot-sequence {
+        .boot-line {
+            margin-bottom: 0.2rem;
+            color: $primary-cyan;
+        }
+    }
+    
+    .terminal-line {
+        margin-bottom: 0.2rem;
+        word-wrap: break-word;
+        
+        &.command {
+            color: $accent-yellow;
+        }
+        
+        &.error {
+            color: $bridge-red;
+        }
+        
+        &.output {
+            color: $bridge-green;
+        }
+        
+        code {
+            background: rgba(0, 255, 255, 0.1);
+            color: $primary-cyan;
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+        }
+        
+        .success-text { color: $bridge-green; font-weight: bold; }
+        .error-text { color: $bridge-red; font-weight: bold; }
+        .warning-text { color: $warning-amber; font-weight: bold; }
+        .info-text { color: $primary-cyan; font-weight: bold; }
+    }
+}
+
+.terminal-input-container {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: #0c0c0c;
+    border-top: 1px solid #333;
+    
+    .terminal-prompt {
+        color: $primary-cyan;
+        margin-right: 0.5rem;
+        font-weight: bold;
+    }
+    
+    .terminal-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: $bridge-green;
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 0.9rem;
+        outline: none;
+        
+        &::placeholder {
+            color: #666;
+        }
+    }
+}
+
+.workspace-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-top: 2px solid $primary-cyan;
+    background: rgba(0, 255, 255, 0.05);
+    
+    .status-indicators {
+        display: flex;
+        gap: 2rem;
+        
+        .status-item {
+            display: flex;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            
+            .status-label {
+                color: #aaa;
+            }
+            
+            .status-value {
+                color: $primary-cyan;
+                font-weight: 600;
+                
+                &.connected {
+                    color: $bridge-green;
+                }
+            }
+        }
+    }
+    
+    .submit-btn {
+        background: linear-gradient(135deg, $bridge-green, #00cc33);
+        color: $dark-bg;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 600;
+        cursor: pointer;
+        clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+        transition: all 0.3s ease;
+        
+        &:hover {
+            background: linear-gradient(135deg, #00ff41, $bridge-green);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 65, 0.4);
+        }
+    }
+}
+
+// =============================================================================
+// TOOLS PANEL (RIGHT)
+// =============================================================================
+
+.tools-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.tools-section, .resources-section, .achievements-section {
+    background: rgba(0, 30, 60, 0.8);
+    border: 2px solid $secondary-orange;
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.tools-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    
+    .tool-btn {
+        width: 100%;
+        padding: 0.75rem;
+        background: linear-gradient(135deg, #444, #666);
+        color: white;
+        border: none;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 0.8rem;
+        cursor: pointer;
+        clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        
+        &:hover {
+            background: linear-gradient(135deg, $secondary-orange, #cc6600);
+            transform: translateX(3px);
+        }
+    }
+}
+
+.resources-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    
+    .resource-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        color: $primary-cyan;
+        text-decoration: none;
+        border: 1px solid #444;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+        
+        &:hover {
+            background: rgba(0, 255, 255, 0.1);
+            border-color: $primary-cyan;
+        }
+    }
+}
+
+// =============================================================================
+// RESPONSIVE DESIGN
+// =============================================================================
+
+@media (max-width: 1200px) {
+    .challenge-main {
+        grid-template-columns: 250px 1fr 250px;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .challenge-main {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .challenge-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .challenge-nav {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .tools-panel {
+        order: 3;
+        flex-direction: row;
+        overflow-x: auto;
+        
+        .tools-section, .resources-section, .achievements-section {
+            min-width: 200px;
+        }
+    }
+}

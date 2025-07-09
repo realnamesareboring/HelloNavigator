@@ -1,0 +1,91 @@
+---
+layout: challenge
+title: "Framework Test Challenge"
+module_name: "Testing Framework"
+challenge_number: 1
+total_challenges: 1
+progress_percent: 100
+xp_reward: 100
+difficulty: "Beginner"
+difficulty_stars: 2
+workspace_icon: "🧪"
+workspace_name: "Test Terminal"
+workspace_mode: "Testing"
+
+xis_message: "Welcome to the framework test, Navigator! This challenge will verify that all our systems are working correctly. Try out the terminal commands and test the interface!"
+
+mission_brief: |
+  This is a **test challenge** to verify our framework is working correctly.
+  
+  Your mission is to:
+  - Test the terminal interface
+  - Try various commands
+  - Use the hint system
+  - Complete the objectives
+
+objectives:
+  - "Open the terminal and type 'help'"
+  - "List files using the 'ls' command"
+  - "Test the hint system"
+  - "Submit your solution"
+
+available_hints: 3
+
+available_tools:
+  - id: "test-tool"
+    name: "Test Tool"
+    icon: "🔧"
+
+resources:
+  - name: "Terminal Guide"
+    url: "#"
+    icon: "📖"
+  - name: "Command Reference"
+    url: "#"
+    icon: "📋"
+---
+
+<!-- The terminal will be loaded automatically by the layout -->
+<div class="test-challenge-content">
+    <div class="test-instructions">
+        <h3>🧪 Framework Test Instructions</h3>
+        <p>This challenge tests our framework components:</p>
+        <ol>
+            <li><strong>Terminal Engine:</strong> Try commands like 'help', 'ls', 'pwd'</li>
+            <li><strong>Hint System:</strong> Click "Request Hint" to test hints</li>
+            <li><strong>Tools:</strong> Try loading tools from the right panel</li>
+            <li><strong>Completion:</strong> Click "Submit Solution" to test success flow</li>
+        </ol>
+        <p><em>All systems should work seamlessly together!</em></p>
+    </div>
+</div>
+
+<style>
+.test-challenge-content {
+    padding: 1rem;
+    background: rgba(0, 20, 40, 0.5);
+    border: 1px solid #00ffff;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.test-instructions h3 {
+    color: #ff8000;
+    margin-bottom: 1rem;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.test-instructions p, .test-instructions li {
+    color: #00ffff;
+    line-height: 1.5;
+}
+
+.test-instructions ol {
+    margin: 1rem 0;
+    padding-left: 2rem;
+}
+
+.test-instructions em {
+    color: #ffff00;
+}
+</style>

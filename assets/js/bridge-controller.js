@@ -200,6 +200,13 @@ class BridgeController {
             return;
         }
         
+    // FOR TESTING: Direct link to test challenge
+    if (moduleId === 'identity-defense') {
+        this.addLogEntry('Entering test challenge for framework verification');
+        window.location.href = 'modules/test-challenge.html';
+        return;
+    }
+    //end testing
         this.addLogEntry(`Entering ${this.getModuleName(moduleId)}`);
         window.location.href = `modules/${moduleId}.html`;
     }

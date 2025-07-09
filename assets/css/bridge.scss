@@ -1,0 +1,815 @@
+---
+---
+
+// =============================================================================
+// BRIDGE INTERFACE STYLES - Retro Spaceship Command Center
+// =============================================================================
+
+// Import base variables from main
+$primary-cyan: #00ffff;
+$secondary-orange: #ff8000;
+$accent-magenta: #ff0080;
+$accent-yellow: #ffff00;
+$dark-bg: #000811;
+$medium-bg: #001122;
+$light-bg: #002233;
+
+// Bridge-specific colors
+$bridge-green: #00ff41;
+$bridge-red: #ff0041;
+$bridge-blue: #4169ff;
+$warning-amber: #ffbf00;
+
+// =============================================================================
+// BRIDGE LAYOUT
+// =============================================================================
+
+.bridge-interface {
+    background: 
+        radial-gradient(circle at 10% 90%, rgba(0, 255, 255, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 90% 10%, rgba(255, 0, 128, 0.05) 0%, transparent 50%),
+        linear-gradient(135deg, $dark-bg, $medium-bg, $light-bg);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.bridge-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+// =============================================================================
+// BRIDGE HEADER
+// =============================================================================
+
+.bridge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: rgba(0, 20, 40, 0.9);
+    border: 2px solid $primary-cyan;
+    margin: 1rem 0;
+    clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 30px 100%, 0 calc(100% - 30px));
+    backdrop-filter: blur(10px);
+}
+
+.ship-status {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ship-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: $primary-cyan;
+    text-shadow: 0 0 10px $primary-cyan;
+}
+
+.system-time {
+    font-family: 'Share Tech Mono', monospace;
+    color: $secondary-orange;
+    font-size: 0.9rem;
+}
+
+.emergency-lights {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.alert-light {
+    width: 20px;
+    height: 20px;
+    background: $bridge-green;
+    border-radius: 50%;
+    box-shadow: 0 0 20px $bridge-green;
+    animation: pulse 2s infinite;
+}
+
+.status-text {
+    font-family: 'Orbitron', sans-serif;
+    color: $bridge-green;
+    font-weight: 600;
+    text-shadow: 0 0 5px $bridge-green;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+// =============================================================================
+// MAIN BRIDGE LAYOUT
+// =============================================================================
+
+.bridge-main {
+    display: grid;
+    grid-template-columns: 350px 1fr 300px;
+    gap: 1.5rem;
+    flex: 1;
+    padding: 1rem 0;
+}
+
+// =============================================================================
+// X.I.S. CHARACTER PANEL
+// =============================================================================
+
+.xis-panel {
+    background: rgba(0, 30, 60, 0.8);
+    border: 2px solid $accent-magenta;
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+    height: fit-content;
+}
+
+.xis-avatar-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.xis-avatar {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-core {
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, $primary-cyan, $accent-magenta);
+    border-radius: 50%;
+    position: relative;
+    animation: coreGlow 3s ease-in-out infinite;
+    
+    &::before {
+        content: '🤖';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2rem;
+        filter: drop-shadow(0 0 10px $primary-cyan);
+    }
+}
+
+.avatar-ring {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border: 3px solid $secondary-orange;
+    border-radius: 50%;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    animation: ringRotate 4s linear infinite;
+}
+
+.avatar-particles {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    
+    &::before, &::after {
+        content: '';
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: $accent-yellow;
+        border-radius: 50%;
+        animation: particleOrbit 6s linear infinite;
+    }
+    
+    &::before {
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    &::after {
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        animation-delay: -3s;
+    }
+}
+
+@keyframes coreGlow {
+    0%, 100% { box-shadow: 0 0 20px $primary-cyan; }
+    50% { box-shadow: 0 0 40px $accent-magenta, 0 0 60px $primary-cyan; }
+}
+
+@keyframes ringRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes particleOrbit {
+    from { transform: translateX(-50%) rotate(0deg) translateX(50px) rotate(0deg); }
+    to { transform: translateX(-50%) rotate(360deg) translateX(50px) rotate(-360deg); }
+}
+
+.xis-communication {
+    .comm-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        color: $secondary-orange;
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    .xis-message {
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid $primary-cyan;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        color: $primary-cyan;
+        line-height: 1.5;
+        font-size: 0.9rem;
+        min-height: 120px;
+        border-radius: 5px;
+    }
+    
+    .xis-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .xis-btn {
+        background: linear-gradient(135deg, $accent-magenta, #cc0066);
+        color: white;
+        border: none;
+        padding: 0.75rem;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 0.8rem;
+        cursor: pointer;
+        clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+        transition: all 0.3s ease;
+        
+        &:hover {
+            background: linear-gradient(135deg, #ff0080, $accent-magenta);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 128, 0.4);
+        }
+    }
+}
+
+// =============================================================================
+// SYSTEMS PANEL (CENTER)
+// =============================================================================
+
+.systems-panel {
+    background: rgba(0, 20, 40, 0.8);
+    border: 2px solid $primary-cyan;
+    clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 30px 100%, 0 calc(100% - 30px));
+    padding: 2rem;
+    backdrop-filter: blur(10px);
+}
+
+.panel-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    
+    .panel-title {
+        font-family: 'Orbitron', sans-serif;
+        color: $primary-cyan;
+        font-size: 2rem;
+        font-weight: 900;
+        text-shadow: 0 0 15px $primary-cyan;
+        margin-bottom: 1rem;
+    }
+    
+    .overall-progress {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        color: $secondary-orange;
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 600;
+    }
+    
+    .overall-bar {
+        width: 300px;
+        height: 20px;
+        background: rgba(0, 0, 0, 0.5);
+        border: 2px solid $secondary-orange;
+        position: relative;
+        overflow: hidden;
+        
+        .overall-fill {
+            height: 100%;
+            background: linear-gradient(90deg, $bridge-green, $accent-yellow, $secondary-orange);
+            transition: width 1s ease;
+            position: relative;
+            
+            &::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+                animation: progressShine 2s infinite;
+            }
+        }
+    }
+}
+
+@keyframes progressShine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+// =============================================================================
+// SYSTEM MODULES GRID
+// =============================================================================
+
+.systems-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.system-module {
+    background: rgba(0, 10, 20, 0.9);
+    border: 2px solid #333;
+    padding: 1.5rem;
+    clip-path: polygon(15px 0, 100% 0, calc(100% - 15px) 100%, 0 100%);
+    transition: all 0.3s ease;
+    position: relative;
+    
+    &:hover {
+        border-color: $primary-cyan;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 255, 255, 0.2);
+    }
+    
+    &[data-module="identity-defense"] {
+        border-color: $bridge-green;
+        
+        &:hover { border-color: $bridge-green; box-shadow: 0 10px 30px rgba(0, 255, 65, 0.2); }
+    }
+    
+    &[data-module="network-defense"] {
+        border-color: $bridge-blue;
+        
+        &:hover { border-color: $bridge-blue; box-shadow: 0 10px 30px rgba(65, 105, 255, 0.2); }
+    }
+    
+    &[data-module="intelligence-hub"] {
+        border-color: $accent-yellow;
+        
+        &:hover { border-color: $accent-yellow; box-shadow: 0 10px 30px rgba(255, 255, 0, 0.2); }
+    }
+    
+    &[data-module="cryptographic-core"] {
+        border-color: $accent-magenta;
+        
+        &:hover { border-color: $accent-magenta; box-shadow: 0 10px 30px rgba(255, 0, 128, 0.2); }
+    }
+}
+
+.module-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    
+    .module-icon {
+        font-size: 1.5rem;
+        margin-right: 0.5rem;
+    }
+    
+    .module-name {
+        flex: 1;
+        font-family: 'Orbitron', sans-serif;
+        color: $primary-cyan;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    
+    .module-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        
+        &.online {
+            background: $bridge-green;
+            color: $dark-bg;
+            box-shadow: 0 0 10px $bridge-green;
+        }
+        
+        &.offline {
+            background: $warning-amber;
+            color: $dark-bg;
+            box-shadow: 0 0 10px $warning-amber;
+        }
+        
+        &.locked {
+            background: $bridge-red;
+            color: white;
+            box-shadow: 0 0 10px $bridge-red;
+        }
+    }
+}
+
+.module-progress {
+    margin-bottom: 1rem;
+    
+    .progress-bar {
+        width: 100%;
+        height: 12px;
+        background: rgba(0, 0, 0, 0.7);
+        border: 1px solid #444;
+        border-radius: 6px;
+        overflow: hidden;
+        position: relative;
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, $primary-cyan, $secondary-orange);
+            transition: width 0.8s ease;
+            position: relative;
+            
+            &::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -50%;
+                width: 50%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+                animation: progressPulse 2s infinite;
+            }
+        }
+    }
+    
+    .progress-text {
+        display: block;
+        margin-top: 0.5rem;
+        color: $secondary-orange;
+        font-size: 0.85rem;
+        font-family: 'Share Tech Mono', monospace;
+    }
+}
+
+@keyframes progressPulse {
+    0% { left: -50%; }
+    100% { left: 100%; }
+}
+
+.module-description {
+    color: #aaa;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-bottom: 1.5rem;
+}
+
+.module-actions {
+    display: flex;
+    gap: 0.5rem;
+    
+    .action-btn {
+        flex: 1;
+        padding: 0.75rem;
+        border: none;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+        transition: all 0.3s ease;
+        
+        &.primary {
+            background: linear-gradient(135deg, $bridge-green, #00cc33);
+            color: $dark-bg;
+            
+            &:hover {
+                background: linear-gradient(135deg, #00ff41, $bridge-green);
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0, 255, 65, 0.4);
+            }
+        }
+        
+        &.secondary {
+            background: linear-gradient(135deg, #444, #666);
+            color: white;
+            
+            &:hover {
+                background: linear-gradient(135deg, #555, #777);
+                transform: translateY(-2px);
+            }
+        }
+        
+        &.locked {
+            background: linear-gradient(135deg, #333, #555);
+            color: #888;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+    }
+}
+
+// =============================================================================
+// NAVIGATION PANEL (RIGHT)
+// =============================================================================
+
+.navigation-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.mission-log, .quick-actions, .navigation-controls {
+    background: rgba(0, 30, 60, 0.8);
+    border: 2px solid $secondary-orange;
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.log-title, .actions-title, .nav-title {
+    font-family: 'Orbitron', sans-serif;
+    color: $secondary-orange;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 5px $secondary-orange;
+}
+
+.log-entries {
+    max-height: 200px;
+    overflow-y: auto;
+    
+    .log-entry {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 0.75rem;
+        padding: 0.5rem;
+        background: rgba(0, 0, 0, 0.3);
+        border-left: 3px solid $primary-cyan;
+        
+        .log-time {
+            color: $accent-yellow;
+            font-size: 0.7rem;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .log-text {
+            color: $primary-cyan;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+    }
+}
+
+.nav-btn {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #444, #666);
+    color: white;
+    border: none;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    transition: all 0.3s ease;
+    
+    &:hover {
+        background: linear-gradient(135deg, $secondary-orange, #cc6600);
+        transform: translateX(5px);
+        box-shadow: 0 3px 10px rgba(255, 128, 0, 0.3);
+    }
+    
+    &.emergency {
+        background: linear-gradient(135deg, $bridge-red, #cc0033);
+        
+        &:hover {
+            background: linear-gradient(135deg, #ff0041, $bridge-red);
+            box-shadow: 0 3px 10px rgba(255, 0, 65, 0.4);
+        }
+    }
+}
+
+// =============================================================================
+// BRIDGE FOOTER
+// =============================================================================
+
+.bridge-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: rgba(0, 20, 40, 0.8);
+    border: 2px solid $accent-yellow;
+    margin: 1rem 0;
+    clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, calc(100% - 20px) 100%, 0 calc(100% - 20px));
+    backdrop-filter: blur(10px);
+    
+    .system-info {
+        display: flex;
+        gap: 1rem;
+        color: $accent-yellow;
+        font-size: 0.8rem;
+        font-family: 'Share Tech Mono', monospace;
+    }
+    
+    .credits {
+        color: $primary-cyan;
+        font-size: 0.8rem;
+    }
+}
+
+// =============================================================================
+// MODAL STYLES
+// =============================================================================
+
+.bridge-modal {
+    background: rgba(0, 20, 40, 0.95);
+    border: 3px solid $primary-cyan;
+    clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, calc(100% - 20px) 100%, 0 calc(100% - 20px));
+    
+    .modal-header {
+        background: rgba(0, 255, 255, 0.1);
+        padding: 1.5rem;
+        border-bottom: 2px solid $primary-cyan;
+        
+        h2 {
+            color: $primary-cyan;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 10px $primary-cyan;
+        }
+        
+        .modal-close {
+            background: $bridge-red;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            
+            &:hover {
+                background: #ff0041;
+                box-shadow: 0 0 10px $bridge-red;
+            }
+        }
+    }
+    
+    .modal-body {
+        padding: 2rem;
+        color: $primary-cyan;
+        line-height: 1.6;
+        
+        h3, h4 {
+            color: $secondary-orange;
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 1rem;
+        }
+        
+        ul {
+            list-style: none;
+            padding-left: 1rem;
+            
+            li {
+                margin-bottom: 0.5rem;
+                
+                &:before {
+                    content: "▶ ";
+                    color: $accent-yellow;
+                    font-weight: bold;
+                }
+            }
+        }
+    }
+    
+    .modal-footer {
+        padding: 1.5rem;
+        border-top: 2px solid $primary-cyan;
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        
+        .modal-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+            transition: all 0.3s ease;
+            
+            &.primary {
+                background: linear-gradient(135deg, $bridge-green, #00cc33);
+                color: $dark-bg;
+                
+                &:hover {
+                    background: linear-gradient(135deg, #00ff41, $bridge-green);
+                    transform: translateY(-2px);
+                }
+            }
+            
+            &.secondary {
+                background: linear-gradient(135deg, #444, #666);
+                color: white;
+                
+                &:hover {
+                    background: linear-gradient(135deg, #555, #777);
+                    transform: translateY(-2px);
+                }
+            }
+        }
+    }
+}
+
+// =============================================================================
+// RESPONSIVE DESIGN
+// =============================================================================
+
+@media (max-width: 1200px) {
+    .bridge-main {
+        grid-template-columns: 300px 1fr 250px;
+        gap: 1rem;
+    }
+    
+    .systems-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .bridge-main {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .bridge-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .xis-panel {
+        order: 2;
+    }
+    
+    .systems-panel {
+        order: 1;
+    }
+    
+    .navigation-panel {
+        order: 3;
+        flex-direction: row;
+        overflow-x: auto;
+        
+        .mission-log, .quick-actions, .navigation-controls {
+            min-width: 250px;
+        }
+    }
+    
+    .panel-header .overall-bar {
+        width: 200px;
+    }
+    
+    .module-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .bridge-container {
+        padding: 0 0.5rem;
+    }
+    
+    .bridge-header, .systems-panel, .xis-panel, .navigation-panel > * {
+        padding: 1rem;
+    }
+    
+    .ship-name {
+        font-size: 1.2rem;
+    }
+    
+    .panel-title {
+        font-size: 1.5rem;
+    }
+}

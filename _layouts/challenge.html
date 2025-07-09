@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include head.html %}
+    <link rel="stylesheet" href="{{ '/assets/css/challenge.css' | relative_url }}">
+</head>
+<body class="challenge-interface">
+    {% include retro-effects.html %}
+    
+    <div class="challenge-container">
+        <!-- Challenge Header -->
+        <header class="challenge-header">
+            <div class="challenge-nav">
+                <button class="nav-btn back" onclick="challengeController.returnToBridge()">
+                    ← Return to Bridge
+                </button>
+                <div class="challenge-breadcrumb">
+                    <span class="module-name">{{ page.module_name }}</span>
+                    <span class="separator">></span>
+                    <span class="challenge-name">{{ page.title }}</span>
+                </div>
+                <div class="challenge-progress">
+                    <span class="progress-text">Challenge {{ page.challenge_number | default: 1 }} of {{ page.total_challenges | default: 4 }}</span>
+                    <div class="progress-bar-mini">
+                        <div class="progress-fill-mini" style="width: {{ page.progress_percent | default: 25 }}%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="challenge-status">
+                <div class="xp-display">
+                    <span class="xp-icon">⭐</span>
+                    <span class="xp-text">{{ page.xp_reward | default: 100 }} XP</span>
+                </div>
+                <div class="difficulty-indicator">
+                    <span class="difficulty-label">{{ page.difficulty | default: "Beginner" }}</span>
+                    <div class="difficulty-stars">
+                        {% assign stars = page.difficulty_stars | default: 2 %}
+                        {% for i in (1..5) %}
+                            {% if i <= stars %}
+                                <span class="star filled">★</span>
+                            {% else %}
+                                <span class="star empty">☆</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="timer-display" id="challengeTimer">
+                    <span class="timer-icon">⏱️</span>
+                    <span class="timer-text">00:00</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Challenge Area -->
+        <div class="challenge-main">
+            <!-- Left Panel: Mission Brief & Objectives -->
+            <aside class="mission-panel">
+                <div class="xis-communication-mini">
+                    <div class="xis-avatar-mini">
+                        <div class="avatar-core-mini"></div>
+                        <div class="avatar-ring-mini"></div>
+                    </div>
+                    <div class="xis-message-mini" id="xisMessage">
+                        {{ page.xis_message | default: "Navigator, this challenge will test your cybersecurity skills. Follow the objectives and use your training!" }}
+                    </div>
+                </div>
+                
+                <div class="mission-brief">
+                    <h3 class="section-title">📋 Mission Brief</h3>
+                    <div class="brief-content">
+                        {{ page.mission_brief | markdownify }}
+                    </div>
+                </div>
+                
+                <div class="objectives-list">
+                    <h3 class="section-title">🎯 Objectives</h3>
+                    <ul class="objectives">
+                        {% for objective in page.objectives %}
+                        <li class="objective-item" data-objective="{{ forloop.index }}">
+                            <span class="objective-status">☐</span>
+                            <span class="objective-text">{{ objective }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <div class="hints-panel">
+                    <h3 class="section-title">💡 Assistance</h3>
+                    <button class="hint-btn" onclick="hintSystem.requestHint()">
+                        <span class="hint-icon">🔍</span>
+                        <span class="hint-text">Request Hint</span>
+                        <span class="hint-count" id="hintCount">({{ page.available_hints | default: 3 }} available)</span>
+                    </button>
+                    <button class="walkthrough-btn" onclick="hintSystem.showWalkthrough()">
+                        <span class="walkthrough-icon">🧠</span>
+                        <span class="walkthrough-text">Show Walkthrough</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Center Panel: Interactive Terminal/Workspace -->
+            <main class="workspace-panel">
+                <div class="workspace-header">
+                    <div class="workspace-title">
+                        <span class="workspace-icon">{{ page.workspace_icon | default: "💻" }}</span>
+                        <span class="workspace-name">{{ page.workspace_name | default: "Cybersecurity Terminal" }}</span>
+                    </div>
+                    <div class="workspace-controls">
+                        <button class="control-btn" onclick="terminalEngine.clearTerminal()">Clear</button>
+                        <button class="control-btn" onclick="terminalEngine.resetChallenge()">Reset</button>
+                        <button class="control-btn" onclick="terminalEngine.toggleFullscreen()">Fullscreen</button>
+                    </div>
+                </div>
+                
+                <div class="workspace-content">
+                    <!-- This is where the specific challenge content goes -->
+                    <div class="challenge-workspace" id="challengeWorkspace">
+                        {{ content }}
+                    </div>
+                </div>
+                
+                <div class="workspace-footer">
+                    <div class="status-indicators">
+                        <div class="status-item">
+                            <span class="status-label">Connection:</span>
+                            <span class="status-value connected">SECURE</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Mode:</span>
+                            <span class="status-value" id="workspaceMode">{{ page.workspace_mode | default: "Interactive" }}</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">User:</span>
+                            <span class="status-value">navigator@uss-navigator</span>
+                        </div>
+                    </div>
+                    <button class="submit-btn" onclick="challengeController.submitSolution()">
+                        <span class="submit-icon">🚀</span>
+                        <span class="submit-text">Submit Solution</span>
+                    </button>
+                </div>
+            </main>
+
+            <!-- Right Panel: Tools & Resources -->
+            <aside class="tools-panel">
+                <div class="tools-section">
+                    <h3 class="section-title">🔧 Tools</h3>
+                    <div class="tools-list" id="availableTools">
+                        {% for tool in page.available_tools %}
+                        <button class="tool-btn" onclick="terminalEngine.loadTool('{{ tool.id }}')">
+                            <span class="tool-icon">{{ tool.icon }}</span>
+                            <span class="tool-name">{{ tool.name }}</span>
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="resources-section">
+                    <h3 class="section-title">📚 Resources</h3>
+                    <div class="resources-list">
+                        {% for resource in page.resources %}
+                        <a href="{{ resource.url }}" target="_blank" class="resource-link">
+                            <span class="resource-icon">{{ resource.icon }}</span>
+                            <span class="resource-name">{{ resource.name }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="achievements-section">
+                    <h3 class="section-title">🏆 Progress</h3>
+                    <div class="achievement-tracker" id="achievementTracker">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Hint Modal -->
+    <div class="modal-overlay" id="hintModal" style="display: none;">
+        <div class="modal-content hint-modal">
+            <div class="modal-header">
+                <h2 id="hintTitle">X.I.S. Guidance System</h2>
+                <button class="modal-close" onclick="hintSystem.closeHint()">✕</button>
+            </div>
+            <div class="modal-body" id="hintContent">
+                <!-- Dynamic hint content -->
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="hintSystem.closeHint()">Close</button>
+                <button class="modal-btn primary" onclick="hintSystem.nextHint()">Next Hint</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Walkthrough Modal -->
+    <div class="modal-overlay" id="walkthroughModal" style="display: none;">
+        <div class="modal-content walkthrough-modal">
+            <div class="modal-header">
+                <h2>🧠 Challenge Walkthrough</h2>
+                <button class="modal-close" onclick="hintSystem.closeWalkthrough()">✕</button>
+            </div>
+            <div class="modal-body" id="walkthroughContent">
+                <!-- Dynamic walkthrough content -->
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="hintSystem.closeWalkthrough()">Close</button>
+                <button class="modal-btn primary" onclick="hintSystem.implementSolution()">Implement Solution</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal" style="display: none;">
+        <div class="modal-content success-modal">
+            <div class="modal-header success-header">
+                <h2>🎉 Mission Accomplished!</h2>
+            </div>
+            <div class="modal-body success-body">
+                <div class="success-animation">
+                    <div class="success-icon">✅</div>
+                    <div class="success-text">
+                        <h3>Excellent Work, Navigator!</h3>
+                        <p>You've successfully completed this cybersecurity challenge.</p>
+                    </div>
+                </div>
+                <div class="success-stats" id="successStats">
+                    <!-- Dynamic stats -->
+                </div>
+                <div class="success-rewards" id="successRewards">
+                    <!-- Dynamic rewards -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="challengeController.reviewSolution()">Review Solution</button>
+                <button class="modal-btn primary" onclick="challengeController.continueToNext()">Continue Journey</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ '/assets/js/terminal-engine.js' | relative_url }}"></script>
+    <script src="{{ '/assets/js/challenge-loader.js' | relative_url }}"></script>
+    <script src="{{ '/assets/js/hint-system.js' | relative_url }}"></script>
+    <script src="{{ '/assets/js/challenge-controller.js' | relative_url }}"></script>
+</body>
+</html>
