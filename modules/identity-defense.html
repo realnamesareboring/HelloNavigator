@@ -1,0 +1,576 @@
+---
+layout: default
+title: "Identity Defense Grid"
+description: "Master crew identification, password security, social engineering defense, and two-factor authentication"
+body_class: "module-interface"
+custom_js:
+  - /assets/js/module-controller.js
+---
+
+<div class="module-container">
+    <!-- Module Header -->
+    <header class="module-header">
+        <div class="module-nav">
+            <button class="nav-btn back" onclick="returnToBridge()">
+                ← Return to Bridge
+            </button>
+            <div class="module-breadcrumb">
+                <span class="ship-name">🛸 Navigator</span>
+                <span class="separator">></span>
+                <span class="module-name">Identity Defense Grid</span>
+            </div>
+        </div>
+        
+        <div class="module-status">
+            <div class="system-status">
+                <span class="status-label">System Status:</span>
+                <span class="status-value offline">OFFLINE</span>
+            </div>
+            <div class="completion-tracker">
+                <span class="progress-text">0 of 4 Protocols Secured</span>
+                <div class="progress-bar-module">
+                    <div class="progress-fill-module" id="moduleProgress" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="module-main">
+        <!-- Left Panel: Mission Briefing -->
+        <aside class="briefing-panel">
+            <div class="xis-communication-module">
+                <div class="xis-avatar-module">
+                    <div class="avatar-core-module"></div>
+                    <div class="avatar-ring-module"></div>
+                </div>
+                <div class="xis-message-module">
+                    <h3>🔐 Identity Defense Grid</h3>
+                    <p>
+                        <strong>Critical Priority, Navigator!</strong> The ship's identity systems have been compromised. 
+                        Space pirates are using stolen credentials to infiltrate our networks.
+                    </p>
+                    <p>
+                        Master these four essential protocols to restore the Identity Defense Grid and protect 
+                        the crew from credential-based attacks.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mission-objectives">
+                <h3>🎯 Mission Objectives</h3>
+                <ul class="objectives-list">
+                    <li>Analyze compromised password databases</li>
+                    <li>Identify social engineering techniques</li>
+                    <li>Implement two-factor authentication</li>
+                    <li>Investigate account compromises</li>
+                    <li>Restore secure identity protocols</li>
+                </ul>
+            </div>
+            
+            <div class="learning-outcomes">
+                <h3>📚 What You'll Learn</h3>
+                <ul class="outcomes-list">
+                    <li><strong>Password Security:</strong> Identifying weak patterns and implementing strong policies</li>
+                    <li><strong>Social Engineering:</strong> Recognizing manipulation tactics and human vulnerabilities</li>
+                    <li><strong>Multi-Factor Auth:</strong> Understanding layered authentication defenses</li>
+                    <li><strong>Identity Forensics:</strong> Investigating compromised accounts and access patterns</li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Center Panel: Challenge List -->
+        <main class="challenges-panel">
+            <div class="panel-header">
+                <h2>🔐 Security Protocols</h2>
+                <p>Complete these challenges in order to restore the Identity Defense Grid</p>
+            </div>
+            
+            <div class="challenges-grid">
+                <!-- Challenge 1: Password Security -->
+                <div class="challenge-card available" onclick="enterChallenge('password-breach')">
+                    <div class="challenge-icon">🔍</div>
+                    <div class="challenge-content">
+                        <h3 class="challenge-title">Space Pirate Password Breach</h3>
+                        <p class="challenge-description">
+                            Analyze intercepted password data to identify security vulnerabilities and 
+                            uncover the pirates' infiltration methods.
+                        </p>
+                        <div class="challenge-meta">
+                            <span class="difficulty beginner">Beginner</span>
+                            <span class="estimated-time">⏱️ 15-20 min</span>
+                            <span class="xp-reward">⭐ 150 XP</span>
+                        </div>
+                        <div class="challenge-skills">
+                            <span class="skill-tag">Password Analysis</span>
+                            <span class="skill-tag">Pattern Recognition</span>
+                            <span class="skill-tag">Command Line</span>
+                        </div>
+                    </div>
+                    <div class="challenge-status">
+                        <div class="status-indicator unlocked">🔓</div>
+                        <span class="status-text">Available</span>
+                    </div>
+                </div>
+
+                <!-- Challenge 2: Social Engineering -->
+                <div class="challenge-card locked" onclick="showRequirements('social-engineering')">
+                    <div class="challenge-icon">🎭</div>
+                    <div class="challenge-content">
+                        <h3 class="challenge-title">Deceptive Communications</h3>
+                        <p class="challenge-description">
+                            Investigate suspicious messages sent to crew members and identify 
+                            social engineering tactics used by space pirates.
+                        </p>
+                        <div class="challenge-meta">
+                            <span class="difficulty beginner">Beginner</span>
+                            <span class="estimated-time">⏱️ 20-25 min</span>
+                            <span class="xp-reward">⭐ 200 XP</span>
+                        </div>
+                        <div class="challenge-skills">
+                            <span class="skill-tag">Social Engineering</span>
+                            <span class="skill-tag">Email Analysis</span>
+                            <span class="skill-tag">Threat Detection</span>
+                        </div>
+                    </div>
+                    <div class="challenge-status">
+                        <div class="status-indicator locked">🔒</div>
+                        <span class="status-text">Locked</span>
+                    </div>
+                </div>
+
+                <!-- Challenge 3: Two-Factor Authentication -->
+                <div class="challenge-card locked" onclick="showRequirements('two-factor-auth')">
+                    <div class="challenge-icon">🛡️</div>
+                    <div class="challenge-content">
+                        <h3 class="challenge-title">Multi-Factor Defense</h3>
+                        <p class="challenge-description">
+                            Configure and test two-factor authentication systems to prevent 
+                            unauthorized access to critical ship systems.
+                        </p>
+                        <div class="challenge-meta">
+                            <span class="difficulty intermediate">Intermediate</span>
+                            <span class="estimated-time">⏱️ 25-30 min</span>
+                            <span class="xp-reward">⭐ 250 XP</span>
+                        </div>
+                        <div class="challenge-skills">
+                            <span class="skill-tag">Authentication</span>
+                            <span class="skill-tag">Security Tokens</span>
+                            <span class="skill-tag">Access Control</span>
+                        </div>
+                    </div>
+                    <div class="challenge-status">
+                        <div class="status-indicator locked">🔒</div>
+                        <span class="status-text">Locked</span>
+                    </div>
+                </div>
+
+                <!-- Challenge 4: Account Forensics -->
+                <div class="challenge-card locked" onclick="showRequirements('account-forensics')">
+                    <div class="challenge-icon">🔬</div>
+                    <div class="challenge-content">
+                        <h3 class="challenge-title">Identity Breach Investigation</h3>
+                        <p class="challenge-description">
+                            Conduct a forensic investigation of compromised accounts to trace 
+                            the attack timeline and identify entry points.
+                        </p>
+                        <div class="challenge-meta">
+                            <span class="difficulty intermediate">Intermediate</span>
+                            <span class="estimated-time">⏱️ 30-35 min</span>
+                            <span class="xp-reward">⭐ 300 XP</span>
+                        </div>
+                        <div class="challenge-skills">
+                            <span class="skill-tag">Digital Forensics</span>
+                            <span class="skill-tag">Log Analysis</span>
+                            <span class="skill-tag">Timeline Analysis</span>
+                        </div>
+                    </div>
+                    <div class="challenge-status">
+                        <div class="status-indicator locked">🔒</div>
+                        <span class="status-text">Locked</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="completion-reward">
+                <h3>🏆 Module Completion Reward</h3>
+                <div class="reward-details">
+                    <div class="reward-item">
+                        <span class="reward-icon">⚡</span>
+                        <span class="reward-text">Identity Defense Grid RESTORED</span>
+                    </div>
+                    <div class="reward-item">
+                        <span class="reward-icon">🏆</span>
+                        <span class="reward-text">Identity Security Specialist Badge</span>
+                    </div>
+                    <div class="reward-item">
+                        <span class="reward-icon">⭐</span>
+                        <span class="reward-text">900 Total XP + 200 Bonus XP</span>
+                    </div>
+                    <div class="reward-item">
+                        <span class="reward-icon">🔓</span>
+                        <span class="reward-text">Network Defense Array Unlocked</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Panel: Resources -->
+        <aside class="resources-panel">
+            <div class="quick-reference">
+                <h3>📖 Quick Reference</h3>
+                <div class="reference-links">
+                    <a href="#" class="reference-link">
+                        <span class="link-icon">🔐</span>
+                        <span class="link-text">Password Security Guide</span>
+                    </a>
+                    <a href="#" class="reference-link">
+                        <span class="link-icon">🎭</span>
+                        <span class="link-text">Social Engineering Tactics</span>
+                    </a>
+                    <a href="#" class="reference-link">
+                        <span class="link-icon">🛡️</span>
+                        <span class="link-text">Multi-Factor Authentication</span>
+                    </a>
+                    <a href="#" class="reference-link">
+                        <span class="link-icon">🔬</span>
+                        <span class="link-text">Digital Forensics Basics</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="progress-tracker">
+                <h3>📊 Your Progress</h3>
+                <div class="progress-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Challenges Completed:</span>
+                        <span class="stat-value" id="completedCount">0/4</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total XP Earned:</span>
+                        <span class="stat-value" id="earnedXP">0/900</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Module Progress:</span>
+                        <span class="stat-value" id="modulePercent">0%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Estimated Time:</span>
+                        <span class="stat-value">90-110 min</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="help-section">
+                <h3>❓ Need Help?</h3>
+                <div class="help-links">
+                    <button class="help-btn" onclick="showModuleGuide()">
+                        📖 Module Guide
+                    </button>
+                    <button class="help-btn" onclick="showTechnicalSupport()">
+                        🔧 Technical Support
+                    </button>
+                    <button class="help-btn" onclick="reportIssue()">
+                        🐛 Report Issue
+                    </button>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<!-- Requirement Modal -->
+<div class="modal-overlay" id="requirementModal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="requirementTitle">Challenge Locked</h2>
+            <button class="modal-close" onclick="closeRequirementModal()">✕</button>
+        </div>
+        <div class="modal-body" id="requirementBody">
+            <!-- Dynamic content -->
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn secondary" onclick="closeRequirementModal()">Close</button>
+            <button class="modal-btn primary" onclick="returnToBridge()">Return to Bridge</button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Module Interface Styles */
+.module-interface {
+    background: 
+        radial-gradient(circle at 15% 85%, rgba(0, 255, 255, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 85% 15%, rgba(255, 0, 128, 0.05) 0%, transparent 50%),
+        linear-gradient(135deg, #000811, #001122, #002233);
+    min-height: 100vh;
+}
+
+.module-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.module-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: rgba(0, 20, 40, 0.9);
+    border: 2px solid #00ffff;
+    margin: 1rem 0;
+    clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 30px 100%, 0 calc(100% - 30px));
+}
+
+.module-main {
+    display: grid;
+    grid-template-columns: 280px 1fr 250px;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.challenges-grid {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.challenge-card {
+    display: grid;
+    grid-template-columns: 80px 1fr 120px;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: rgba(0, 20, 40, 0.8);
+    border: 2px solid #00ffff;
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.challenge-card.available:hover {
+    background: rgba(0, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 255, 255, 0.3);
+}
+
+.challenge-card.locked {
+    opacity: 0.6;
+    border-color: #666;
+}
+
+.challenge-icon {
+    font-size: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.challenge-title {
+    color: #ff8000;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.challenge-description {
+    color: #00ffff;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+}
+
+.challenge-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.challenge-meta span {
+    font-size: 0.8rem;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.difficulty {
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+.difficulty.beginner { background: #4caf50; color: white; }
+.difficulty.intermediate { background: #ff9800; color: white; }
+.difficulty.advanced { background: #f44336; color: white; }
+
+.estimated-time, .xp-reward {
+    color: #ffff00;
+}
+
+.challenge-skills {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.skill-tag {
+    background: rgba(255, 128, 0, 0.2);
+    color: #ff8000;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    border: 1px solid #ff8000;
+}
+
+.challenge-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.status-indicator {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.status-text {
+    color: #00ffff;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.completion-reward {
+    background: rgba(0, 255, 255, 0.1);
+    border: 2px solid #00ffff;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.completion-reward h3 {
+    color: #ffff00;
+    font-family: 'Orbitron', sans-serif;
+    margin-bottom: 1rem;
+}
+
+.reward-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+}
+
+.reward-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #00ffff;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 1200px) {
+    .module-main {
+        grid-template-columns: 1fr;
+    }
+    
+    .briefing-panel, .resources-panel {
+        order: 2;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .challenge-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .challenge-meta {
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+function enterChallenge(challengeId) {
+    console.log('🚀 Entering challenge:', challengeId);
+    
+    if (challengeId === 'password-breach') {
+        window.location.href = 'space-pirate-password-breach.html';
+    } else {
+        showRequirements(challengeId);
+    }
+}
+
+function showRequirements(challengeId) {
+    const modal = document.getElementById('requirementModal');
+    const title = document.getElementById('requirementTitle');
+    const body = document.getElementById('requirementBody');
+    
+    const challenges = {
+        'social-engineering': {
+            title: 'Deceptive Communications',
+            requirement: 'Complete "Space Pirate Password Breach" first',
+            description: 'This challenge builds on password security knowledge and introduces social engineering concepts.'
+        },
+        'two-factor-auth': {
+            title: 'Multi-Factor Defense',
+            requirement: 'Complete first two challenges',
+            description: 'Advanced authentication requires understanding of password vulnerabilities and social engineering.'
+        },
+        'account-forensics': {
+            title: 'Identity Breach Investigation',
+            requirement: 'Complete first three challenges',
+            description: 'Forensic investigation combines all previous skills in a complex scenario.'
+        }
+    };
+    
+    const challenge = challenges[challengeId];
+    if (challenge) {
+        title.textContent = `🔒 ${challenge.title} - Locked`;
+        body.innerHTML = `
+            <div class="requirement-info">
+                <h3>Prerequisites Required</h3>
+                <p><strong>Requirement:</strong> ${challenge.requirement}</p>
+                <p>${challenge.description}</p>
+                <div class="unlock-path">
+                    <h4>Unlock Path:</h4>
+                    <ol>
+                        <li>Complete "Space Pirate Password Breach"</li>
+                        ${challengeId !== 'social-engineering' ? '<li>Complete "Deceptive Communications"</li>' : ''}
+                        ${challengeId === 'account-forensics' ? '<li>Complete "Multi-Factor Defense"</li>' : ''}
+                    </ol>
+                </div>
+            </div>
+        `;
+    }
+    
+    modal.style.display = 'flex';
+}
+
+function closeRequirementModal() {
+    document.getElementById('requirementModal').style.display = 'none';
+}
+
+function returnToBridge() {
+    window.location.href = '../bridge.html';
+}
+
+function showModuleGuide() {
+    alert('Module guide will be implemented in the next phase!');
+}
+
+function showTechnicalSupport() {
+    alert('Technical support will be implemented in the next phase!');
+}
+
+function reportIssue() {
+    alert('Issue reporting will be implemented in the next phase!');
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔐 Identity Defense Grid module loaded');
+});
+</script>

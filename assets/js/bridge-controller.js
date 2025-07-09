@@ -1,14 +1,14 @@
 // =============================================================================
-// BRIDGE CONTROLLER - Main dashboard functionality
+// BRIDGE CONTROLLER - Updated for Real CTF Challenges
 // =============================================================================
 
 class BridgeController {
     constructor() {
         this.modules = {
-            'identity-defense': { unlocked: true, progress: 0, total: 4 },
-            'network-defense': { unlocked: false, progress: 0, total: 4 },
-            'intelligence-hub': { unlocked: false, progress: 0, total: 4 },
-            'cryptographic-core': { unlocked: false, progress: 0, total: 4 }
+            'identity-defense': { unlocked: true, progress: 0, total: 4, completed: false },
+            'network-defense': { unlocked: false, progress: 0, total: 4, completed: false },
+            'intelligence-hub': { unlocked: false, progress: 0, total: 4, completed: false },
+            'cryptographic-core': { unlocked: false, progress: 0, total: 4, completed: false }
         };
         
         this.achievements = [];
@@ -93,16 +93,17 @@ class BridgeController {
         if (currentIndex >= 0 && currentIndex < moduleOrder.length - 1) {
             const nextModule = moduleOrder[currentIndex + 1];
             this.modules[nextModule].unlocked = true;
-            
-            // Add achievement and log entry
-            this.addAchievement(`Module Completed: ${this.getModuleName(moduleId)}`);
-            this.addLogEntry(`${this.getModuleName(nextModule)} systems unlocked`);
         }
         
-        // Check if all modules completed
-        if (moduleOrder.every(id => this.modules[id].completed)) {
-            this.completeAllModules();
-        }
+        // Add achievement
+        this.addAchievement(`${this.getModuleName(moduleId)} Restored`);
+        
+        // Log completion
+        this.addLogEntry(`✅ ${this.getModuleName(moduleId)} systems restored`);
+        
+        // Update displays
+        this.updateAllDisplays();
+        this.saveProgress();
     }
 
     // =============================================================================
@@ -110,19 +111,22 @@ class BridgeController {
     // =============================================================================
 
     updateAllDisplays() {
-        this.updateModuleDisplays();
+        this.updateModuleProgress();
         this.updateOverallProgress();
         this.updateXISMessage();
+        this.updateMissionLog();
     }
 
-    updateModuleDisplays() {
+    updateModuleProgress() {
         Object.keys(this.modules).forEach(moduleId => {
             const module = this.modules[moduleId];
-            const statusEl = document.getElementById(`status-${moduleId.split('-')[0]}`);
-            const progressEl = document.getElementById(`progress-${moduleId.split('-')[0]}`);
-            const textEl = document.getElementById(`text-${moduleId.split('-')[0]}`);
+            const card = document.querySelector(`[data-module="${moduleId}"]`);
             
-            if (statusEl && progressEl && textEl) {
+            if (card) {
+                const statusEl = card.querySelector('.module-status');
+                const progressEl = card.querySelector('.progress-fill');
+                const textEl = card.querySelector('.progress-text');
+                
                 // Update status
                 if (module.completed) {
                     statusEl.textContent = 'ONLINE';
@@ -190,6 +194,20 @@ class BridgeController {
         this.typewriterEffect(xisEl, message);
     }
 
+    updateMissionLog() {
+        const logEl = document.getElementById('missionLog');
+        if (!logEl) return;
+        
+        // Show last 5 entries
+        const recentEntries = this.missionLog.slice(-5);
+        logEl.innerHTML = recentEntries.map(entry => `
+            <div class="log-entry">
+                <span class="log-time">${entry.time}</span>
+                <span class="log-text">${entry.message}</span>
+            </div>
+        `).join('');
+    }
+
     // =============================================================================
     // NAVIGATION & ACTIONS
     // =============================================================================
@@ -200,15 +218,23 @@ class BridgeController {
             return;
         }
         
-    // FOR TESTING: Direct link to test challenge
-    if (moduleId === 'identity-defense') {
-        this.addLogEntry('Entering test challenge for framework verification');
-        window.location.href = 'modules/test-challenge.html';
-        return;
-    }
-    //end testing
         this.addLogEntry(`Entering ${this.getModuleName(moduleId)}`);
-        window.location.href = `modules/${moduleId}.html`;
+        
+        // Navigate to the appropriate module page
+        const modulePages = {
+            'identity-defense': 'modules/identity-defense.html',
+            'network-defense': 'modules/network-defense.html',
+            'intelligence-hub': 'modules/intelligence-hub.html',
+            'cryptographic-core': 'modules/cryptographic-core.html'
+        };
+        
+        const page = modulePages[moduleId];
+        if (page) {
+            window.location.href = page;
+        } else {
+            console.error('Module page not found:', moduleId);
+            this.addLogEntry(`❌ Error: Module ${moduleId} not available`);
+        }
     }
 
     viewProgress(moduleId) {
@@ -248,30 +274,29 @@ class BridgeController {
         document.getElementById('moduleModal').style.display = 'flex';
     }
 
-    viewRequirements(moduleId) {
-        this.showRequirements(moduleId);
-    }
+    // =============================================================================
+    // CHALLENGE COMPLETION HANDLERS
+    // =============================================================================
 
-    showRequirements(moduleId) {
-        const requirements = this.getModuleRequirements(moduleId);
-        const modalTitle = document.getElementById('modalTitle');
-        const modalBody = document.getElementById('modalBody');
+    onChallengeCompleted(moduleId, challengeId, xpEarned) {
+        console.log(`🎉 Challenge completed: ${challengeId} in ${moduleId}`);
         
-        modalTitle.textContent = 'Access Requirements';
-        modalBody.innerHTML = `
-            <div class="requirements-info">
-                <h3>🔒 ${this.getModuleName(moduleId)} - LOCKED</h3>
-                <p><strong>Requirements:</strong> ${requirements}</p>
-                <p>Complete the prerequisite modules to unlock this system.</p>
-                <div class="unlock-path">
-                    <h4>Unlock Path:</h4>
-                    ${this.getUnlockPath(moduleId)}
-                </div>
-            </div>
-        `;
-        
-        document.getElementById('modalAction').style.display = 'none';
-        document.getElementById('moduleModal').style.display = 'flex';
+        // Update module progress
+        const module = this.modules[moduleId];
+        if (module) {
+            module.progress = Math.min(module.progress + 1, module.total);
+            
+            // Log completion
+            this.addLogEntry(`✅ Completed: ${challengeId} (+${xpEarned} XP)`);
+            
+            // Check if module is complete
+            if (module.progress >= module.total) {
+                this.completeModule(moduleId);
+            }
+            
+            this.updateAllDisplays();
+            this.saveProgress();
+        }
     }
 
     // =============================================================================
@@ -302,64 +327,102 @@ class BridgeController {
         const objectives = {
             'identity-defense': [
                 'Implement secure authentication protocols',
-                'Configure two-factor authentication systems',
-                'Defend against social engineering attacks',
-                'Establish password security policies'
+                'Detect social engineering attempts',
+                'Configure multi-factor authentication',
+                'Investigate compromised accounts'
             ],
             'network-defense': [
-                'Configure firewall protection systems',
                 'Analyze network traffic patterns',
-                'Secure wireless communication channels',
-                'Implement intrusion detection systems'
+                'Configure firewall rules',
+                'Secure wireless communications',
+                'Monitor for intrusions'
             ],
             'intelligence-hub': [
-                'Master reconnaissance techniques',
-                'Learn information gathering methods',
-                'Understand digital footprint analysis',
-                'Practice ethical penetration testing'
+                'Gather threat intelligence',
+                'Perform reconnaissance analysis',
+                'Map attack vectors',
+                'Assess security posture'
             ],
             'cryptographic-core': [
                 'Implement encryption protocols',
-                'Master cipher analysis techniques',
-                'Configure secure key exchange',
-                'Restore quantum-safe communications'
+                'Manage cryptographic keys',
+                'Analyze cipher systems',
+                'Secure data transmission'
             ]
         };
-        return objectives[moduleId] || [];
+        return objectives[moduleId] || ['Objectives not defined'];
     }
 
-    addLogEntry(text) {
-        const timestamp = new Date().toISOString().split('T')[1].substring(0, 5);
-        const stardate = new Date().toISOString().split('T')[0].replace(/-/g, '.').substring(2);
+    getSecurityLevel(progress, total) {
+        const percentage = (progress / total) * 100;
+        if (percentage === 0) return 'CRITICAL';
+        if (percentage < 50) return 'VULNERABLE';
+        if (percentage < 100) return 'IMPROVING';
+        return 'SECURE';
+    }
+
+    getNextChallenge(moduleId, progress) {
+        const challenges = {
+            'identity-defense': [
+                'Password Security Analysis',
+                'Social Engineering Detection',
+                'Multi-Factor Authentication',
+                'Account Forensics'
+            ],
+            'network-defense': [
+                'Traffic Analysis',
+                'Firewall Configuration',
+                'Wireless Security',
+                'Intrusion Detection'
+            ],
+            'intelligence-hub': [
+                'Threat Intelligence',
+                'Reconnaissance Analysis',
+                'Attack Vector Mapping',
+                'Security Assessment'
+            ],
+            'cryptographic-core': [
+                'Encryption Implementation',
+                'Key Management',
+                'Cipher Analysis',
+                'Secure Communications'
+            ]
+        };
         
-        this.missionLog.unshift({
-            time: `${stardate}.${timestamp.replace(':', '')}`,
-            text: text,
-            timestamp: Date.now()
+        const moduleChallenges = challenges[moduleId] || [];
+        return moduleChallenges[progress] || 'Module Complete';
+    }
+
+    // =============================================================================
+    // HELPER METHODS
+    // =============================================================================
+
+    addLogEntry(message) {
+        const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+        const stardate = `2024.${String(new Date().getDate()).padStart(3, '0')}.${String(new Date().getHours()).padStart(2, '0')}${String(new Date().getMinutes()).padStart(2, '0')}`;
+        
+        this.missionLog.push({
+            time: stardate,
+            message: message,
+            timestamp: timestamp
         });
         
-        // Keep only last 10 entries
-        if (this.missionLog.length > 10) {
-            this.missionLog = this.missionLog.slice(0, 10);
+        // Keep only last 20 entries
+        if (this.missionLog.length > 20) {
+            this.missionLog = this.missionLog.slice(-20);
         }
         
-        this.updateMissionLogDisplay();
-        this.saveProgress();
+        this.updateMissionLog();
     }
 
-    updateMissionLogDisplay() {
-        const logContainer = document.getElementById('missionLog');
-        if (!logContainer) return;
-        
-        logContainer.innerHTML = this.missionLog.map(entry => `
-            <div class="log-entry">
-                <span class="log-time">${entry.time}</span>
-                <span class="log-text">${entry.text}</span>
-            </div>
-        `).join('');
+    addAchievement(achievement) {
+        if (!this.achievements.includes(achievement)) {
+            this.achievements.push(achievement);
+            this.addLogEntry(`🏆 Achievement unlocked: ${achievement}`);
+        }
     }
 
-    typewriterEffect(element, text, speed = 50) {
+    typewriterEffect(element, text) {
         element.textContent = '';
         let i = 0;
         const timer = setInterval(() => {
@@ -368,41 +431,76 @@ class BridgeController {
             if (i >= text.length) {
                 clearInterval(timer);
             }
-        }, speed);
+        }, 30);
     }
 
+    // UI Event Handlers
+    closeModal() {
+        document.getElementById('moduleModal').style.display = 'none';
+    }
+
+    showRequirements(moduleId) {
+        const requirements = this.getModuleRequirements(moduleId);
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+        
+        modalTitle.textContent = 'Access Requirements';
+        modalBody.innerHTML = `
+            <div class="requirements-info">
+                <h3>🔒 ${this.getModuleName(moduleId)} - LOCKED</h3>
+                <p><strong>Requirements:</strong> ${requirements}</p>
+                <p>Complete the prerequisite modules to unlock this system.</p>
+                <div class="unlock-path">
+                    <h4>Unlock Path:</h4>
+                    ${this.getUnlockPath(moduleId)}
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('modalAction').style.display = 'none';
+        document.getElementById('moduleModal').style.display = 'flex';
+    }
+
+    getUnlockPath(moduleId) {
+        const paths = {
+            'network-defense': '<ol><li>Complete Identity Defense Grid</li></ol>',
+            'intelligence-hub': '<ol><li>Complete Identity Defense Grid</li><li>Complete Network Defense Array</li></ol>',
+            'cryptographic-core': '<ol><li>Complete Identity Defense Grid</li><li>Complete Network Defense Array</li><li>Complete Intelligence Gathering Hub</li></ol>'
+        };
+        return paths[moduleId] || '<p>Path unknown</p>';
+    }
+
+    // Additional UI methods
     updateSystemTime() {
         const timeEl = document.getElementById('systemTime');
         if (timeEl) {
             const now = new Date();
-            const stardate = now.toISOString().split('T')[0].replace(/-/g, '.').substring(2);
-            const time = now.toTimeString().substring(0, 8);
-            timeEl.textContent = `STARDATE: ${stardate} | ${time}`;
+            const stardate = `STARDATE: 2024.${String(now.getDate()).padStart(3, '0')}.${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+            timeEl.textContent = stardate;
         }
     }
 
     startBridgeAnimations() {
-        // Pulsing alert light
-        const alertLight = document.getElementById('alertLight');
-        if (alertLight) {
-            setInterval(() => {
-                alertLight.style.opacity = alertLight.style.opacity === '0.3' ? '1' : '0.3';
-            }, 1000);
+        // Add subtle bridge animations here
+        const avatar = document.getElementById('xisAvatar');
+        if (avatar) {
+            avatar.style.animation = 'pulse 3s ease-in-out infinite';
         }
     }
 
-    closeModal() {
-        document.getElementById('moduleModal').style.display = 'none';
-        document.getElementById('modalAction').style.display = 'block';
-    }
-
-    // Quick Actions
+    // Navigation methods for other UI elements
     returnToLanding() {
         window.location.href = 'index.html';
     }
 
-    emergencyProtocol() {
-        window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+    viewAchievements() {
+        alert(`Achievements: ${this.achievements.join(', ') || 'None yet'}`);
+    }
+
+    viewStatistics() {
+        const totalCompleted = Object.values(this.modules).reduce((sum, m) => sum + m.progress, 0);
+        const totalChallenges = Object.values(this.modules).reduce((sum, m) => sum + m.total, 0);
+        alert(`Progress: ${totalCompleted}/${totalChallenges} challenges completed`);
     }
 }
 
@@ -412,22 +510,27 @@ class BridgeController {
 
 class XISController {
     constructor() {
-        this.mood = 'helpful'; // helpful, excited, concerned, proud
         this.responses = {
             greetings: [
-                "Greetings, Navigator! How may I assist you today?",
-                "Welcome back to the bridge! Ready for another challenge?",
-                "Navigator on deck! All systems report ready for your commands."
+                "Navigator! Your expertise in cybersecurity continues to amaze me.",
+                "Welcome back to the bridge! The ship's systems are responding well to your repairs.",
+                "Excellent timing, Navigator. I've been monitoring new security threats that require your attention.",
+                "The crew speaks highly of your cybersecurity skills. They feel much safer with you aboard!",
+                "Greetings! I've compiled new intelligence reports while you were away. Ready for another mission?"
             ],
             hints: [
                 "Remember, every cybersecurity challenge teaches real-world skills!",
                 "Take your time - understanding is more important than speed.",
-                "Each module builds on the previous one. Master the basics first!"
+                "Each module builds on the previous one. Master the basics first!",
+                "Don't hesitate to use the hint system - even experts need guidance sometimes.",
+                "The most valuable skill is learning to think like both an attacker and defender."
             ],
             encouragement: [
                 "You're doing excellent work, Navigator!",
                 "The crew's safety depends on your cybersecurity skills!",
-                "Each challenge completed brings us closer to home!"
+                "Each challenge completed brings us closer to home!",
+                "Your skills are growing stronger with each challenge!",
+                "The space pirates don't stand a chance against your expertise!"
             ]
         };
     }
@@ -457,6 +560,17 @@ class XISController {
 }
 
 // =============================================================================
+// GLOBAL API FOR CHALLENGE COMPLETION
+// =============================================================================
+
+// This function can be called from challenges to update bridge progress
+window.notifyBridgeOfCompletion = function(moduleId, challengeId, xpEarned = 100) {
+    if (typeof bridgeController !== 'undefined') {
+        bridgeController.onChallengeCompleted(moduleId, challengeId, xpEarned);
+    }
+};
+
+// =============================================================================
 // INITIALIZATION
 // =============================================================================
 
@@ -467,5 +581,5 @@ document.addEventListener('DOMContentLoaded', function() {
     bridgeController = new BridgeController();
     xisController = new XISController();
     
-    console.log('🛸 Bridge systems fully operational');
+    console.log('🛸 Bridge systems fully operational - Ready for real CTF challenges!');
 });
