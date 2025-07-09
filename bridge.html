@@ -1,0 +1,249 @@
+---
+layout: default
+title: "X.I.S. Navigation Bridge"
+description: "Command center for your cybersecurity space adventure"
+body_class: "bridge-interface"
+custom_js:
+  - /assets/js/bridge-controller.js
+  - /assets/js/xis-character.js
+---
+
+<div class="bridge-container">
+    <!-- Bridge Header -->
+    <header class="bridge-header">
+        <div class="ship-status">
+            <span class="ship-name">🛸 U.S.S. NAVIGATOR</span>
+            <span class="system-time" id="systemTime">STARDATE: 2024.001</span>
+        </div>
+        <div class="emergency-lights">
+            <div class="alert-light" id="alertLight"></div>
+            <div class="status-text" id="statusText">SYSTEMS NOMINAL</div>
+        </div>
+    </header>
+
+    <!-- Main Bridge Layout -->
+    <div class="bridge-main">
+        <!-- Left Panel: X.I.S. Character -->
+        <aside class="xis-panel">
+            <div class="xis-avatar-container">
+                <div class="xis-avatar" id="xisAvatar">
+                    <div class="avatar-core"></div>
+                    <div class="avatar-ring"></div>
+                    <div class="avatar-particles"></div>
+                </div>
+            </div>
+            
+            <div class="xis-communication">
+                <div class="comm-header">
+                    <span class="comm-icon">📡</span>
+                    <span>X.I.S. COMMUNICATION</span>
+                </div>
+                <div class="xis-message" id="xisMessage">
+                    Welcome back, Navigator! I've been analyzing the ship's systems while you were away. Several critical systems still require your expertise to repair.
+                </div>
+                <div class="xis-controls">
+                    <button class="xis-btn" onclick="xisController.speakToXIS()">🎤 Speak to X.I.S.</button>
+                    <button class="xis-btn" onclick="xisController.requestHint()">💡 Request Guidance</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center Panel: System Status -->
+        <main class="systems-panel">
+            <div class="panel-header">
+                <h1 class="panel-title">SHIP SYSTEMS STATUS</h1>
+                <div class="overall-progress">
+                    <span>REPAIR PROGRESS:</span>
+                    <div class="overall-bar">
+                        <div class="overall-fill" id="overallProgress" style="width: 0%"></div>
+                    </div>
+                    <span id="overallPercent">0%</span>
+                </div>
+            </div>
+
+            <div class="systems-grid">
+                <!-- Identity Defense Grid -->
+                <div class="system-module" data-module="identity-defense">
+                    <div class="module-header">
+                        <span class="module-icon">🔐</span>
+                        <h3 class="module-name">Identity Defense Grid</h3>
+                        <div class="module-status" id="status-identity">OFFLINE</div>
+                    </div>
+                    <div class="module-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-identity" style="width: 0%"></div>
+                        </div>
+                        <span class="progress-text" id="text-identity">0/4 Protocols Secured</span>
+                    </div>
+                    <div class="module-description">
+                        Master crew identification, password security, social engineering defense, and two-factor authentication
+                    </div>
+                    <div class="module-actions">
+                        <button class="action-btn primary" onclick="bridgeController.enterModule('identity-defense')">
+                            🚀 Enter Module
+                        </button>
+                        <button class="action-btn secondary" onclick="bridgeController.viewProgress('identity-defense')">
+                            📊 View Progress
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Network Defense Array -->
+                <div class="system-module" data-module="network-defense">
+                    <div class="module-header">
+                        <span class="module-icon">🌐</span>
+                        <h3 class="module-name">Network Defense Array</h3>
+                        <div class="module-status" id="status-network">LOCKED</div>
+                    </div>
+                    <div class="module-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-network" style="width: 0%"></div>
+                        </div>
+                        <span class="progress-text" id="text-network">Requires Identity Defense</span>
+                    </div>
+                    <div class="module-description">
+                        Secure ship communications through traffic analysis, firewall configuration, and WiFi security
+                    </div>
+                    <div class="module-actions">
+                        <button class="action-btn locked" disabled>
+                            🔒 Locked
+                        </button>
+                        <button class="action-btn secondary" onclick="bridgeController.viewRequirements('network-defense')">
+                            ❓ Requirements
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Intelligence Gathering Hub -->
+                <div class="system-module" data-module="intelligence-hub">
+                    <div class="module-header">
+                        <span class="module-icon">🔍</span>
+                        <h3 class="module-name">Intelligence Gathering Hub</h3>
+                        <div class="module-status" id="status-intelligence">LOCKED</div>
+                    </div>
+                    <div class="module-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-intelligence" style="width: 0%"></div>
+                        </div>
+                        <span class="progress-text" id="text-intelligence">Requires Network Defense</span>
+                    </div>
+                    <div class="module-description">
+                        Learn reconnaissance techniques including information gathering and digital footprints
+                    </div>
+                    <div class="module-actions">
+                        <button class="action-btn locked" disabled>
+                            🔒 Locked
+                        </button>
+                        <button class="action-btn secondary" onclick="bridgeController.viewRequirements('intelligence-hub')">
+                            ❓ Requirements
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cryptographic Core -->
+                <div class="system-module" data-module="cryptographic-core">
+                    <div class="module-header">
+                        <span class="module-icon">🔐</span>
+                        <h3 class="module-name">Cryptographic Core</h3>
+                        <div class="module-status" id="status-crypto">LOCKED</div>
+                    </div>
+                    <div class="module-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-crypto" style="width: 0%"></div>
+                        </div>
+                        <span class="progress-text" id="text-crypto">Requires Intelligence Hub</span>
+                    </div>
+                    <div class="module-description">
+                        Restore encrypted communications using cipher techniques and key exchange protocols
+                    </div>
+                    <div class="module-actions">
+                        <button class="action-btn locked" disabled>
+                            🔒 Locked
+                        </button>
+                        <button class="action-btn secondary" onclick="bridgeController.viewRequirements('cryptographic-core')">
+                            ❓ Requirements
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Panel: Mission Log & Navigation -->
+        <aside class="navigation-panel">
+            <div class="mission-log">
+                <h3 class="log-title">📜 MISSION LOG</h3>
+                <div class="log-entries" id="missionLog">
+                    <div class="log-entry">
+                        <span class="log-time">2024.001.0800</span>
+                        <span class="log-text">Navigator awakened on ship</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">2024.001.0801</span>
+                        <span class="log-text">Mission parameters accepted</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">2024.001.0802</span>
+                        <span class="log-text">Bridge access granted</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <h3 class="actions-title">⚡ QUICK ACTIONS</h3>
+                <button class="nav-btn" onclick="bridgeController.viewAchievements()">
+                    🏆 Achievements
+                </button>
+                <button class="nav-btn" onclick="bridgeController.viewStatistics()">
+                    📈 Statistics
+                </button>
+                <button class="nav-btn" onclick="bridgeController.openSettings()">
+                    ⚙️ Settings
+                </button>
+                <button class="nav-btn emergency" onclick="bridgeController.emergencyProtocol()">
+                    🚨 Emergency
+                </button>
+            </div>
+
+            <div class="navigation-controls">
+                <h3 class="nav-title">🧭 NAVIGATION</h3>
+                <button class="nav-btn" onclick="bridgeController.returnToLanding()">
+                    🏠 Return to Launch
+                </button>
+                <button class="nav-btn" onclick="bridgeController.viewStarMap()">
+                    🗺️ Star Map
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Bridge Footer -->
+    <footer class="bridge-footer">
+        <div class="system-info">
+            <span>NAVIGATOR OS v2.4.1</span>
+            <span>|</span>
+            <span>SECURITY LEVEL: ALPHA</span>
+            <span>|</span>
+            <span id="connectionStatus">CONNECTION: STABLE</span>
+        </div>
+        <div class="credits">
+            <span>Navigator's Codebook © 2024</span>
+        </div>
+    </footer>
+</div>
+
+<!-- Modal for Module Details -->
+<div class="modal-overlay" id="moduleModal" style="display: none;">
+    <div class="modal-content bridge-modal">
+        <div class="modal-header">
+            <h2 id="modalTitle">Module Details</h2>
+            <button class="modal-close" onclick="bridgeController.closeModal()">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <!-- Dynamic content -->
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn secondary" onclick="bridgeController.closeModal()">Close</button>
+            <button class="modal-btn primary" id="modalAction">Take Action</button>
+        </div>
+    </div>
+</div>

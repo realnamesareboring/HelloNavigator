@@ -51,11 +51,59 @@ class NavigatorLanding {
         this.activateSystemsSequence();
     }
 
-    declineDisclaimer() {
-        console.log('❌ Mission declined');
-        alert('Mission aborted. X.I.S. cannot return home without your assistance.');
-        // Could redirect to an alternative page or show alternative content
-    }
+declineDisclaimer() {
+    console.log('❌ Mission declined - X.I.S. is not happy about this...');
+    
+    const modal = document.getElementById('disclaimerModal');
+    const modalContent = modal.querySelector('.modal-content');
+    
+    // Dramatic abort sequence with sound effects (if you want)
+    modalContent.innerHTML = `
+        <div style="text-align: center; padding: 2rem;">
+            <h2 style="color: #ff0000; font-family: 'Orbitron', sans-serif; margin-bottom: 1rem; animation: pulse 0.5s infinite;">
+                🚨 EMERGENCY PROTOCOL ACTIVATED 🚨
+            </h2>
+            <p style="color: #00ffff; font-size: 1.2rem; margin-bottom: 1rem;">
+                X.I.S. RESPONSE: "Never gonna give you up..."
+            </p>
+            <p style="color: #ff8000; font-size: 0.9rem; margin-bottom: 1rem;">
+                Activating emergency entertainment protocol...
+            </p>
+            <div style="margin-top: 1rem;">
+                <div class="loading-bar" style="width: 100%; height: 15px; background: #002233; border: 2px solid #00ffff; border-radius: 10px; overflow: hidden;">
+                    <div id="loadingProgress" style="height: 100%; background: linear-gradient(90deg, #ff0000, #ff8000, #00ffff); width: 0%; transition: width 0.15s; border-radius: 8px;"></div>
+                </div>
+                <p style="color: #00ffff; font-size: 0.8rem; margin-top: 0.5rem;">
+                    Transmission in progress... 🎵
+                </p>
+            </div>
+        </div>
+        
+        <style>
+            @keyframes pulse {
+                0% { opacity: 1; }
+                50% { opacity: 0.5; }
+                100% { opacity: 1; }
+            }
+        </style>
+    `;
+    
+    // Animate loading bar with variable speed for dramatic effect
+    let progress = 0;
+    const loadingBar = document.getElementById('loadingProgress');
+    const loadingInterval = setInterval(() => {
+        // Variable speed - starts slow, speeds up
+        const speed = Math.max(1, Math.floor(progress / 20) + 1);
+        progress += speed;
+        loadingBar.style.width = Math.min(100, progress) + '%';
+        
+        if (progress >= 100) {
+            clearInterval(loadingInterval);
+            // THE RICK ROLL! 🎵
+            window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+        }
+    }, 150);
+}
 
     // =============================================================================
     // TITLE SCRAMBLE EFFECT
