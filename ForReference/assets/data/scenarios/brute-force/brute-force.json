@@ -1,0 +1,141 @@
+{
+  "challengeId": "brute-force",
+  "title": "Brute Force Attack Analysis",
+  "platform": "Microsoft Entra ID",
+  "difficulty": "beginner",
+  "estimatedTime": "10-15 minutes",
+  "xpReward": 200,
+  "description": "<strong>Scenario:</strong> Multiple failed login attempts against a single user account have been detected. Investigate potential brute force attacks targeting high-value accounts.<br><br><strong>Learning Objectives:</strong> Basic filtering, counting operations, and user-focused analysis.<br><br><strong>Data Sources:</strong> SigninLogs table from Microsoft Entra ID",
+  "dataFile": "signin-logs.csv",
+  "solutionFile": "solution.kql",
+  "tableName": "SigninLogs",
+  "expectedResults": {
+    "minRows": 1,
+    "suspiciousThreshold": 10,
+    "successCriteria": "Identifies users with excessive failed login attempts"
+  },
+  "progressiveHints": [
+    {
+      "level": 1,
+      "title": "🎯 Focus on Failures",
+      "content": "Start by filtering for failed login attempts using ResultType != 0, then focus on analyzing patterns of failed attempts against user accounts.",
+      "example": "SigninLogs | where ResultType != 0"
+    },
+    {
+      "level": 2,
+      "title": "👤 Target Specific Users", 
+      "content": "Look for patterns where a single user has many failed attempts. Use 'summarize' to count failures per user account - this is different from password spray which groups by IP.",
+      "example": "| summarize FailedAttempts = count() by UserPrincipalName"
+    },
+    {
+      "level": 3,
+      "title": "📊 Add Source Analysis",
+      "content": "Brute force attacks may come from multiple IPs. Add source IP information and time ranges to your analysis to understand the attack pattern.",
+      "example": "| summarize FailedAttempts = count(), SourceIPs = make_set(IPAddress), FirstAttempt = min(TimeGenerated) by UserPrincipalName"
+    },
+    {
+      "level": 4,
+      "title": "⚡ Set Brute Force Threshold",
+      "content": "Typically 10+ failed attempts against a single user indicate brute force activity. Filter for users with high failure counts to focus on real attacks.",
+      "example": "| where FailedAttempts >= 10"
+    },
+    {
+      "level": 5,
+      "title": "🎯 Sort and Prioritize",
+      "content": "Order results by failure count to see the most attacked accounts first. This helps security teams prioritize their incident response efforts.",
+      "example": "| order by FailedAttempts desc"
+    }
+  ],
+  "walkthrough": {
+    "title": "🧠 Brute Force Attack: KQL Detective Work",
+    "subtitle": "Understanding how brute force differs from password spray attacks and why user-focused analysis matters",
+    "challenge": {
+      "title": "🎯 The Challenge: What Makes Brute Force Attacks Different?",
+      "description": "Brute force attacks have a distinct signature:",
+      "points": [
+        "**High intensity per user** - Many attempts against specific accounts",
+        "**Targeted approach** - Focuses on valuable accounts (admin, service accounts)",
+        "**Rapid execution** - Fast succession of password attempts",
+        "**May use multiple IPs** - Distributed infrastructure to avoid detection"
+      ],
+      "detectiveWork": "Find patterns that show _many attempts → single target → persistent behavior_"
+    },
+    "solution": {
+      "title": "📝 Our Detective Query",
+      "query": "SigninLogs\n| where TimeGenerated > ago(24h)        // 🕐 Recent activity only\n| where ResultType != 0                 // ❌ Failed logins only\n| summarize                            // 📊 Group and analyze\n    FailedAttempts = count(),               // 🔢 Total attempts per user\n    SourceIPs = make_set(IPAddress),        // 🌍 All attacking IPs\n    UniqueIPs = dcount(IPAddress),          // 📊 Count of unique sources\n    FirstAttempt = min(TimeGenerated),      // ⏰ Attack start\n    LastAttempt = max(TimeGenerated)        // ⏰ Attack end\n    by UserPrincipalName                    // 👤 Group by USER (not IP!)\n| where FailedAttempts >= 10           // ⚠️ Brute force threshold\n| extend AttackDuration = LastAttempt - FirstAttempt,    // ⏱️ Time span\n         AttemptsPerHour = FailedAttempts / (datetime_diff('hour', LastAttempt, FirstAttempt) + 1)  // 📈 Attack rate\n| order by FailedAttempts desc         // 📊 Most attacked users first"
+    },
+    "reasoningSteps": [
+      {
+        "step": 1,
+        "title": "Start with Failed Authentications",
+        "operator": "| where ResultType != 0",
+        "explanation": "Like password spray, we focus on failed attempts. But our grouping strategy will be completely different.",
+        "detectiveInsight": "Same starting point, different destination - we're looking for volume against specific targets.",
+        "borderColor": "#f44336"
+      },
+      {
+        "step": 2,
+        "title": "Group by USER (Not IP!)",
+        "operator": "| summarize ... by UserPrincipalName",
+        "explanation": "This is the key difference! We group by user account to find who is being attacked, not who is attacking.",
+        "detectiveInsight": "Password spray: '1 IP → many users'. Brute force: 'many attempts → 1 user'. Flip the perspective!",
+        "borderColor": "#2c5aa0"
+      },
+      {
+        "step": 3,
+        "title": "Count Attack Intensity",
+        "operator": "FailedAttempts = count()",
+        "explanation": "High failure counts per user indicate automated password guessing against that specific account.",
+        "detectiveInsight": "One user with 100 failed logins = under attack. 100 users with 1 failed login each = normal noise.",
+        "borderColor": "#9c27b0"
+      },
+      {
+        "step": 4,
+        "title": "Track Attack Sources",
+        "operator": "SourceIPs = make_set(IPAddress)",
+        "explanation": "Brute force attacks may come from multiple IPs. Collecting all source IPs shows the attack infrastructure.",
+        "detectiveInsight": "Modern brute force uses botnets - many IPs attacking the same user reveals distributed attack patterns.",
+        "borderColor": "#4caf50"
+      },
+      {
+        "step": 5,
+        "title": "Set Volume Threshold",
+        "operator": "| where FailedAttempts >= 10",
+        "explanation": "10+ failures against one user is unusual and indicates automated attack behavior.",
+        "detectiveInsight": "Legitimate users rarely fail 10+ times - this threshold separates attacks from normal user confusion.",
+        "borderColor": "#ff9800"
+      }
+    ],
+    "resultInterpretation": {
+      "title": "🎓 What Our Results Tell Us",
+      "description": "When our query finds results, here's what each field reveals:",
+      "fields": [
+        {
+          "field": "UserPrincipalName + FailedAttempts ≥ 10",
+          "meaning": "This user account is under active brute force attack"
+        },
+        {
+          "field": "FailedAttempts",
+          "meaning": "Attack intensity - higher numbers indicate more persistent attacks"
+        },
+        {
+          "field": "SourceIPs",
+          "meaning": "Attack infrastructure - multiple IPs suggest botnet or proxy usage"
+        },
+        {
+          "field": "UniqueIPs", 
+          "meaning": "Attack distribution - single IP vs. many IPs reveals attack sophistication"
+        },
+        {
+          "field": "AttackDuration",
+          "meaning": "How long the attack lasted - quick bursts vs. sustained campaigns"
+        },
+        {
+          "field": "AttemptsPerHour",
+          "meaning": "Attack rate - reveals automation level and detection avoidance tactics"
+        }
+      ],
+      "pattern": "High-volume, user-focused, persistent authentication attacks"
+    }
+  }
+}

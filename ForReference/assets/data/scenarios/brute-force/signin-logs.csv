@@ -1,0 +1,58 @@
+TimeGenerated,UserPrincipalName,IPAddress,Location,ResultType,AppDisplayName,ClientAppUsed,DeviceDetail,ConditionalAccessStatus,RiskLevelDuringSignIn
+2025-06-27T14:23:15Z,sarah.johnson@contoso.com,10.0.1.15,"Seattle, WA",0,Microsoft 365,Browser,Windows 10,success,none
+2025-06-27T14:18:42Z,mike.chen@contoso.com,10.0.1.23,"Seattle, WA",0,Microsoft Teams,Modern Authentication,Windows 11,success,none
+2025-06-27T14:15:31Z,alex.rodriguez@contoso.com,192.168.1.45,"New York, NY",0,SharePoint Online,Browser,macOS,success,none
+2025-06-27T14:12:18Z,emma.thompson@contoso.com,10.0.1.87,"Chicago, IL",0,Exchange Online,Mobile Apps,iOS,success,none
+2025-06-27T14:08:55Z,david.kim@contoso.com,172.16.0.12,"San Francisco, CA",0,Microsoft 365,Browser,Windows 10,success,none
+2025-06-27T13:22:15Z,admin@contoso.com,203.0.113.88,Unknown,50126,Microsoft 365,Browser,Unknown,failure,medium
+2025-06-27T13:22:32Z,admin@contoso.com,203.0.113.88,Unknown,50126,Microsoft 365,Browser,Unknown,failure,medium
+2025-06-27T13:22:48Z,admin@contoso.com,203.0.113.88,Unknown,50126,Microsoft 365,Browser,Unknown,failure,medium
+2025-06-27T13:23:05Z,admin@contoso.com,203.0.113.88,Unknown,50126,Microsoft 365,Browser,Unknown,failure,medium
+2025-06-27T13:23:21Z,admin@contoso.com,203.0.113.88,Unknown,50126,Microsoft 365,Browser,Unknown,failure,medium
+2025-06-27T13:23:38Z,admin@contoso.com,203.0.113.88,Unknown,50126,Microsoft 365,Browser,Unknown,failure,medium
+2025-06-27T13:23:54Z,admin@contoso.com,203.0.113.88,Unknown,50126,Microsoft 365,Browser,Unknown,failure,medium
+2025-06-27T13:24:11Z,admin@contoso.com,203.0.113.88,Unknown,50126,Microsoft 365,Browser,Unknown,failure,medium
+2025-06-27T13:24:27Z,admin@contoso.com,203.0.113.88,Unknown,50126,Microsoft 365,Browser,Unknown,failure,medium
+2025-06-27T13:24:44Z,admin@contoso.com,203.0.113.88,Unknown,50126,Microsoft 365,Browser,Unknown,failure,medium
+2025-06-27T13:25:00Z,admin@contoso.com,203.0.113.88,Unknown,50126,Microsoft 365,Browser,Unknown,failure,medium
+2025-06-27T13:25:17Z,admin@contoso.com,203.0.113.88,Unknown,50126,Microsoft 365,Browser,Unknown,failure,medium
+2025-06-27T13:25:33Z,admin@contoso.com,203.0.113.88,Unknown,50126,Microsoft 365,Browser,Unknown,failure,medium
+2025-06-27T13:25:50Z,admin@contoso.com,203.0.113.88,Unknown,50126,Microsoft 365,Browser,Unknown,failure,medium
+2025-06-27T13:26:06Z,admin@contoso.com,203.0.113.88,Unknown,50126,Microsoft 365,Browser,Unknown,failure,medium
+2025-06-27T13:28:15Z,service.account@contoso.com,198.51.100.77,Unknown,50126,Microsoft 365,Browser,Unknown,failure,low
+2025-06-27T13:28:45Z,service.account@contoso.com,198.51.100.77,Unknown,50126,Microsoft 365,Browser,Unknown,failure,low
+2025-06-27T13:29:15Z,service.account@contoso.com,198.51.100.77,Unknown,50126,Microsoft 365,Browser,Unknown,failure,low
+2025-06-27T13:29:45Z,service.account@contoso.com,198.51.100.77,Unknown,50126,Microsoft 365,Browser,Unknown,failure,low
+2025-06-27T13:30:15Z,service.account@contoso.com,198.51.100.77,Unknown,50126,Microsoft 365,Browser,Unknown,failure,low
+2025-06-27T13:30:45Z,service.account@contoso.com,198.51.100.77,Unknown,50126,Microsoft 365,Browser,Unknown,failure,low
+2025-06-27T13:31:15Z,service.account@contoso.com,198.51.100.77,Unknown,50126,Microsoft 365,Browser,Unknown,failure,low
+2025-06-27T13:31:45Z,service.account@contoso.com,198.51.100.77,Unknown,50126,Microsoft 365,Browser,Unknown,failure,low
+2025-06-27T13:32:15Z,service.account@contoso.com,198.51.100.77,Unknown,50126,Microsoft 365,Browser,Unknown,failure,low
+2025-06-27T13:32:45Z,service.account@contoso.com,198.51.100.77,Unknown,50126,Microsoft 365,Browser,Unknown,failure,low
+2025-06-27T13:33:15Z,service.account@contoso.com,198.51.100.77,Unknown,50126,Microsoft 365,Browser,Unknown,failure,low
+2025-06-27T13:33:45Z,service.account@contoso.com,198.51.100.77,Unknown,50126,Microsoft 365,Browser,Unknown,failure,low
+2025-06-27T13:34:15Z,service.account@contoso.com,198.51.100.77,Unknown,50126,Microsoft 365,Browser,Unknown,failure,low
+2025-06-27T13:34:45Z,service.account@contoso.com,198.51.100.77,Unknown,50126,Microsoft 365,Browser,Unknown,failure,low
+2025-06-27T13:35:15Z,service.account@contoso.com,198.51.100.77,Unknown,50126,Microsoft 365,Browser,Unknown,failure,low
+2025-06-27T13:40:22Z,backup.user@contoso.com,172.16.1.99,Unknown,50126,Microsoft 365,Browser,Unknown,failure,none
+2025-06-27T13:40:55Z,backup.user@contoso.com,172.16.1.99,Unknown,50126,Microsoft 365,Browser,Unknown,failure,none
+2025-06-27T13:41:28Z,backup.user@contoso.com,172.16.1.99,Unknown,50126,Microsoft 365,Browser,Unknown,failure,none
+2025-06-27T13:42:01Z,backup.user@contoso.com,172.16.1.99,Unknown,50126,Microsoft 365,Browser,Unknown,failure,none
+2025-06-27T13:42:34Z,backup.user@contoso.com,172.16.1.99,Unknown,50126,Microsoft 365,Browser,Unknown,failure,none
+2025-06-27T13:43:07Z,backup.user@contoso.com,172.16.1.99,Unknown,50126,Microsoft 365,Browser,Unknown,failure,none
+2025-06-27T13:43:40Z,backup.user@contoso.com,172.16.1.99,Unknown,50126,Microsoft 365,Browser,Unknown,failure,none
+2025-06-27T13:44:13Z,backup.user@contoso.com,172.16.1.99,Unknown,50126,Microsoft 365,Browser,Unknown,failure,none
+2025-06-27T13:44:46Z,backup.user@contoso.com,172.16.1.99,Unknown,50126,Microsoft 365,Browser,Unknown,failure,none
+2025-06-27T13:45:19Z,backup.user@contoso.com,172.16.1.99,Unknown,50126,Microsoft 365,Browser,Unknown,failure,none
+2025-06-27T13:45:52Z,backup.user@contoso.com,172.16.1.99,Unknown,50126,Microsoft 365,Browser,Unknown,failure,none
+2025-06-27T13:46:25Z,backup.user@contoso.com,172.16.1.99,Unknown,50126,Microsoft 365,Browser,Unknown,failure,none
+2025-06-27T14:22:33Z,lisa.anderson@contoso.com,10.0.1.15,"Seattle, WA",50074,Microsoft 365,Browser,Windows 10,failure,none
+2025-06-27T14:19:44Z,john.williams@contoso.com,192.168.1.45,"New York, NY",50076,Microsoft Teams,Modern Authentication,Windows 11,failure,none
+2025-06-27T14:16:55Z,maria.garcia@contoso.com,172.16.0.12,"Chicago, IL",50126,SharePoint Online,Browser,macOS,failure,none
+2025-06-27T14:14:12Z,chris.brown@contoso.com,10.0.1.87,"San Francisco, CA",0,Exchange Online,Mobile Apps,Android,success,none
+2025-06-27T14:11:23Z,sarah.johnson@contoso.com,10.0.1.23,"Seattle, WA",0,Microsoft 365,Browser,Windows 10,success,none
+2025-06-27T14:09:34Z,mike.chen@contoso.com,192.168.1.45,"New York, NY",0,Microsoft Teams,Modern Authentication,Windows 11,success,none
+2025-06-27T14:07:45Z,alex.rodriguez@contoso.com,10.0.1.15,"Chicago, IL",0,SharePoint Online,Browser,macOS,success,none
+2025-06-27T14:05:56Z,emma.thompson@contoso.com,172.16.0.12,"San Francisco, CA",0,Exchange Online,Mobile Apps,iOS,success,none
+2025-06-27T14:04:07Z,david.kim@contoso.com,10.0.1.87,"Seattle, WA",0,Microsoft 365,Browser,Windows 10,success,none
+2025-06-27T14:02:18Z,lisa.anderson@contoso.com,10.0.1.23,"New York, NY",0,Microsoft Teams,Modern Authentication,Windows 11,success,none

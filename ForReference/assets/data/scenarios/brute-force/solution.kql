@@ -1,0 +1,35 @@
+// Brute Force Attack Detection
+// Identifies user accounts under sustained password attack
+// This pattern suggests automated password guessing against specific accounts
+SigninLogs
+| where TimeGenerated > ago(24h)
+| where ResultType != 0  // Failed logins only
+| summarize 
+    FailedAttempts = count(),
+    SourceIPs = make_set(IPAddress),
+    UniqueIPs = dcount(IPAddress),
+    FirstAttempt = min(TimeGenerated),
+    LastAttempt = max(TimeGenerated),
+    Apps = make_set(AppDisplayName)
+    by UserPrincipalName  // Group by USER (not IP like password spray)
+| where FailedAttempts >= 10  // Brute force threshold
+| extend 
+    AttackDuration = LastAttempt - FirstAttempt,
+    AttemptsPerHour = FailedAttempts / (datetime_diff('hour', LastAttempt, FirstAttempt) + 1),
+    AttackType = case(
+        UniqueIPs == 1, "Single-Source Brute Force",
+        UniqueIPs <= 3, "Limited-Source Brute Force", 
+        "Distributed Brute Force"
+    )
+| order by FailedAttempts desc, UniqueIPs desc
+| project 
+    UserPrincipalName,
+    FailedAttempts,
+    AttackType,
+    UniqueIPs,
+    SourceIPs,
+    AttemptsPerHour,
+    AttackDuration,
+    FirstAttempt,
+    LastAttempt,
+    Apps

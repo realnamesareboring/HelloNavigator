@@ -1,0 +1,246 @@
+{
+  "metadata": {
+    "version": "2.0", 
+    "description": "KQL Security Training Platform - Navigation Configuration",
+    "lastUpdated": "2025-01-01",
+    "totalChallenges": 43,
+    "availableChallenges": 2
+  },
+  "platforms": {
+    "microsoft365": {
+      "id": "microsoft365",
+      "name": "Microsoft 365 Security",
+      "icon": "🛡️",
+      "description": "Learn identity protection, email security, and endpoint defense with Entra ID, Defender for Office 365, and more.",
+      "order": 1,
+      "challenges": [
+        {
+          "id": "password-spray",
+          "status": "available",
+          "order": 1,
+          "isNew": false,
+          "featured": true
+        },
+        {
+          "id": "brute-force", 
+          "status": "available",
+          "order": 2,
+          "isNew": true,
+          "featured": false
+        },
+        {
+          "id": "account-takeover",
+          "status": "coming-soon",
+          "order": 3,
+          "isNew": false,
+          "featured": false
+        },
+        {
+          "id": "mfa-bypass",
+          "status": "coming-soon", 
+          "order": 4,
+          "isNew": false,
+          "featured": false
+        },
+        {
+          "id": "legacy-auth",
+          "status": "coming-soon",
+          "order": 5,
+          "isNew": false,
+          "featured": false
+        },
+        {
+          "id": "phishing-bec",
+          "status": "coming-soon",
+          "order": 6,
+          "isNew": false,
+          "featured": false
+        }
+      ]
+    },
+    "azure": {
+      "id": "azure",
+      "name": "Azure Platform", 
+      "icon": "☁️",
+      "description": "Master cloud security posture management, storage protection, and Azure Kubernetes Service security.",
+      "order": 2,
+      "challenges": [
+        {
+          "id": "azure-storage-misc",
+          "status": "coming-soon",
+          "order": 1,
+          "isNew": false,
+          "featured": false
+        },
+        {
+          "id": "azure-ransomware",
+          "status": "coming-soon", 
+          "order": 2,
+          "isNew": false,
+          "featured": false
+        },
+        {
+          "id": "aks-compromise",
+          "status": "coming-soon",
+          "order": 3,
+          "isNew": false,
+          "featured": false
+        },
+        {
+          "id": "cspm-violations",
+          "status": "coming-soon",
+          "order": 4,
+          "isNew": false,
+          "featured": false
+        }
+      ]
+    },
+    "aws": {
+      "id": "aws",
+      "name": "AWS Platform",
+      "icon": "🏗️", 
+      "description": "Investigate IAM compromises, S3 security issues, and advanced ransomware techniques targeting AWS services.",
+      "order": 3,
+      "challenges": [
+        {
+          "id": "s3-misconfiguration",
+          "status": "coming-soon",
+          "order": 1,
+          "isNew": false,
+          "featured": false
+        },
+        {
+          "id": "s3-ransomware",
+          "status": "coming-soon",
+          "order": 2,
+          "isNew": false,
+          "featured": true
+        },
+        {
+          "id": "iam-compromise", 
+          "status": "coming-soon",
+          "order": 3,
+          "isNew": false,
+          "featured": false
+        },
+        {
+          "id": "supply-chain",
+          "status": "coming-soon",
+          "order": 4,
+          "isNew": false,
+          "featured": false
+        }
+      ]
+    },
+    "kubernetes": {
+      "id": "kubernetes",
+      "name": "Kubernetes & Containers",
+      "icon": "🚢",
+      "description": "Secure container orchestration with API server protection, runtime security, and network policy enforcement.",
+      "order": 4,
+      "challenges": [
+        {
+          "id": "k8s-api-compromise",
+          "status": "coming-soon",
+          "order": 1,
+          "isNew": false,
+          "featured": false
+        },
+        {
+          "id": "container-runtime",
+          "status": "coming-soon",
+          "order": 2,
+          "isNew": false,
+          "featured": false
+        },
+        {
+          "id": "k8s-misconfiguration",
+          "status": "coming-soon",
+          "order": 3,
+          "isNew": false,
+          "featured": false
+        },
+        {
+          "id": "network-policy",
+          "status": "coming-soon",
+          "order": 4,
+          "isNew": false,
+          "featured": false
+        }
+      ]
+    },
+    "multicloud": {
+      "id": "multicloud",
+      "name": "Multi-Cloud & Hybrid",
+      "icon": "🌐",
+      "description": "Advanced cross-platform investigations and hybrid environment security analysis.",
+      "order": 5,
+      "challenges": [
+        {
+          "id": "credential-reuse",
+          "status": "coming-soon",
+          "order": 1,
+          "isNew": false,
+          "featured": false
+        },
+        {
+          "id": "supply-chain-compromise",
+          "status": "coming-soon",
+          "order": 2,
+          "isNew": false,
+          "featured": false
+        },
+        {
+          "id": "hybrid-identity",
+          "status": "coming-soon",
+          "order": 3,
+          "isNew": false,
+          "featured": false
+        }
+      ]
+    }
+  },
+  "difficultyLevels": {
+    "beginner": {
+      "name": "Beginner",
+      "color": "#4caf50",
+      "description": "New to KQL - basic filtering and counting",
+      "skillLevel": "0-3 months experience"
+    },
+    "intermediate": {
+      "name": "Intermediate",
+      "color": "#ff9800", 
+      "description": "Some KQL knowledge - aggregation and correlation",
+      "skillLevel": "3-12 months experience"
+    },
+    "advanced": {
+      "name": "Advanced",
+      "color": "#f44336",
+      "description": "Experienced with KQL - complex multi-step analysis",
+      "skillLevel": "1+ years experience"
+    },
+    "expert": {
+      "name": "Expert",
+      "color": "#9c27b0",
+      "description": "KQL master - behavioral analytics and novel techniques",
+      "skillLevel": "2+ years experience"
+    }
+  },
+  "statusTypes": {
+    "available": {
+      "name": "Available",
+      "icon": "✅",
+      "description": "Ready to play"
+    },
+    "coming-soon": {
+      "name": "Coming Soon", 
+      "icon": "🚧",
+      "description": "In development"
+    },
+    "beta": {
+      "name": "Beta",
+      "icon": "🧪", 
+      "description": "Testing phase"
+    }
+  }
+}
