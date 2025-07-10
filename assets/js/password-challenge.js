@@ -79,7 +79,7 @@ const PasswordChallengeData = {
 };
 
 // =============================================================================
-// CHALLENGE-SPECIFIC TERMINAL COMMANDS
+// TERMINAL ENGINE - Enhanced for Password Challenge
 // =============================================================================
 
 class PasswordChallengeTerminal extends TerminalEngine {
@@ -88,11 +88,64 @@ class PasswordChallengeTerminal extends TerminalEngine {
         this.evidenceLoaded = false;
         this.flagSubmitted = false;
         this.hintsUsed = 0;
+        this.userScrolling = false;
         
         this.registerPasswordCommands();
+        this.setupScrollBehavior();
+    }
+    
+    setupScrollBehavior() {
+        // Prevent auto-scroll when user is manually scrolling
+        const output = document.getElementById('terminalOutput');
+        if (output) {
+            let scrollTimeout;
+            
+            output.addEventListener('scroll', () => {
+                this.userScrolling = true;
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    // Check if user scrolled to bottom
+                    const isAtBottom = output.scrollTop + output.clientHeight >= output.scrollHeight - 10;
+                    if (isAtBottom) {
+                        this.userScrolling = false;
+                    }
+                }, 1000);
+            });
+        }
+    }
+    
+    // Override scrollToBottom to respect user scrolling
+    scrollToBottom() {
+        if (!this.userScrolling) {
+            const output = document.getElementById('terminalOutput');
+            if (output) {
+                output.scrollTop = output.scrollHeight;
+            }
+        }
     }
     
     registerPasswordCommands() {
+        // Enhanced help command with proper formatting
+        this.commands.set('help', () => {
+            return `Available commands:
+
+cat <filename>      - Display file contents
+grep <pattern> <file> - Search for patterns in files
+analyze <filename>  - Run security analysis on file
+submit <flag>       - Submit your discovered flag
+clear              - Clear the terminal screen
+ls                 - List directory contents
+pwd                - Print working directory
+
+CHALLENGE-SPECIFIC COMMANDS:
+cat crew_passwords.txt     - View intercepted password database
+grep admin crew_passwords.txt - Search for admin accounts
+analyze crew_passwords.txt - Run automated security scan
+submit NAVIGATOR{...}      - Submit discovered flag
+
+Type 'man <command>' for detailed information about specific commands.`;
+        });
+        
         // Override cat command to handle evidence file
         this.commands.set('cat', (args) => {
             if (args.length === 0) {
@@ -120,7 +173,7 @@ class PasswordChallengeTerminal extends TerminalEngine {
         // Add grep command for pattern searching
         this.commands.set('grep', (args) => {
             if (args.length < 2) {
-                return '[ERROR] Usage: grep <pattern> <filename>';
+                return '[ERROR] Usage: grep <pattern> <filename>\n\nExamples:\n  grep admin crew_passwords.txt\n  grep password crew_passwords.txt\n  grep NAVIGATOR crew_passwords.txt';
             }
             
             const pattern = args[0];
@@ -157,7 +210,7 @@ class PasswordChallengeTerminal extends TerminalEngine {
         // Add submit command for flag submission
         this.commands.set('submit', (args) => {
             if (args.length === 0) {
-                return '[ERROR] Usage: submit <flag>';
+                return '[ERROR] Usage: submit <flag>\n\nExample:\n  submit NAVIGATOR{your_discovered_flag}';
             }
             
             const submittedFlag = args.join(' ');
@@ -180,6 +233,68 @@ class PasswordChallengeTerminal extends TerminalEngine {
             
             return '[ERROR] File not found.';
         });
+        
+        // Add man command for detailed help
+        this.commands.set('man', (args) => {
+            if (args.length === 0) {
+                return '[ERROR] Usage: man <command>\n\nExample: man grep';
+            }
+            
+            const command = args[0];
+            return this.getManPage(command);
+        });
+    }
+    
+    getManPage(command) {
+        const manPages = {
+            'cat': `CAT(1) - Display file contents
+            
+SYNOPSIS
+    cat <filename>
+    
+DESCRIPTION
+    Display the contents of a file to the terminal.
+    
+EXAMPLES
+    cat crew_passwords.txt    Display password database`,
+    
+            'grep': `GREP(1) - Search text patterns
+            
+SYNOPSIS
+    grep <pattern> <filename>
+    
+DESCRIPTION
+    Search for lines containing the specified pattern in a file.
+    
+EXAMPLES
+    grep admin crew_passwords.txt     Find admin accounts
+    grep password crew_passwords.txt  Find password patterns
+    grep NAVIGATOR crew_passwords.txt Find flags`,
+    
+            'analyze': `ANALYZE(1) - Security analysis tool
+            
+SYNOPSIS
+    analyze <filename>
+    
+DESCRIPTION
+    Perform automated security analysis on data files.
+    
+EXAMPLES
+    analyze crew_passwords.txt    Run password security audit`,
+    
+            'submit': `SUBMIT(1) - Flag submission
+            
+SYNOPSIS
+    submit <flag>
+    
+DESCRIPTION
+    Submit discovered flags for validation.
+    
+EXAMPLES
+    submit NAVIGATOR{weak_passwords_compromise_security}`
+        };
+        
+        return manPages[command] || `[ERROR] No manual page found for '${command}'`;
     }
     
     displayPasswordFile() {
@@ -188,7 +303,7 @@ class PasswordChallengeTerminal extends TerminalEngine {
 # CLASSIFICATION: RESTRICTED
 # 
 # FORMAT: username:password:role:last_access
-# 
+
 johnson:password123:engineer:2024-03-15
 smith:123456:technician:2024-03-14
 williams:qwerty:pilot:2024-03-13
@@ -196,8 +311,63 @@ brown:letmein:medic:2024-03-12
 davis:admin:administrator:2024-03-16
 miller:password:security:2024-03-11
 wilson:123456789:engineer:2024-03-10
-...
+moore:football:pilot:2024-03-09
+taylor:welcome:technician:2024-03-08
+anderson:monkey:engineer:2024-03-07
+thomas:dragon:pilot:2024-03-06
+jackson:sunshine:medic:2024-03-05
+white:iloveyou:technician:2024-03-04
+harris:princess:engineer:2024-03-03
+martin:rockyou:pilot:2024-03-02
+thompson:abc123:security:2024-03-01
+garcia:password1:technician:2024-02-29
+martinez:trustno1:engineer:2024-02-28
+robinson:000000:pilot:2024-02-27
+clark:hello:medic:2024-02-26
+rodriguez:freedom:technician:2024-02-25
+lewis:whatever:engineer:2024-02-24
+lee:nicole:pilot:2024-02-23
+walker:jordan:security:2024-02-22
+hall:michelle:technician:2024-02-21
+allen:maggie:engineer:2024-02-20
+young:matrix:pilot:2024-02-19
+hernandez:12345:medic:2024-02-18
+king:batman:technician:2024-02-17
+wright:computer:engineer:2024-02-16
+lopez:access:pilot:2024-02-15
+hill:master:security:2024-02-14
+scott:lover:technician:2024-02-13
+green:test:engineer:2024-02-12
+adams:summer:pilot:2024-02-11
+baker:secret:medic:2024-02-10
+gonzalez:service:technician:2024-02-09
+nelson:charlie:engineer:2024-02-08
+carter:sierra:pilot:2024-02-07
+mitchell:yankee:security:2024-02-06
+perez:alpha:technician:2024-02-05
+roberts:golf:engineer:2024-02-04
+turner:hotel:pilot:2024-02-03
+phillips:india:medic:2024-02-02
+campbell:juliet:technician:2024-02-01
+parker:kilo:engineer:2024-01-31
+evans:lima:pilot:2024-01-30
+edwards:mike:security:2024-01-29
+collins:november:technician:2024-01-28
+stewart:oscar:engineer:2024-01-27
+sanchez:papa:pilot:2024-01-26
+morris:quebec:medic:2024-01-25
+rogers:romeo:technician:2024-01-24
+reed:tango:engineer:2024-01-23
+cook:uniform:pilot:2024-01-22
+morgan:victor:security:2024-01-21
+bell:whiskey:technician:2024-01-20
+murphy:xray:engineer:2024-01-19
+bailey:zulu:pilot:2024-01-18
 rivera:NAVIGATOR{weak_passwords_compromise_security}:admin:2024-03-17
+cooper:delta:medic:2024-01-17
+richardson:echo:technician:2024-01-16
+cox:foxtrot:engineer:2024-01-15
+howard:bravo:pilot:2024-01-14
 ward:admin123:administrator:2024-03-18
 
 [INFO] File contains 65 user accounts with passwords and roles.
@@ -213,7 +383,11 @@ ward:admin123:administrator:2024-03-18
             'smith:123456:technician:2024-03-14',
             'williams:qwerty:pilot:2024-03-13',
             'rivera:NAVIGATOR{weak_passwords_compromise_security}:admin:2024-03-17',
-            'ward:admin123:administrator:2024-03-18'
+            'ward:admin123:administrator:2024-03-18',
+            'johnson:password123:engineer:2024-03-15',
+            'wilson:123456789:engineer:2024-03-10',
+            'garcia:password1:technician:2024-02-29',
+            'thompson:abc123:security:2024-03-01'
         ];
         
         // Simple pattern matching
@@ -224,10 +398,18 @@ ward:admin123:administrator:2024-03-18
         });
         
         if (matches.length === 0) {
-            return `[INFO] No matches found for pattern: ${pattern}`;
+            return `[INFO] No matches found for pattern: "${pattern}"
+            
+Try searching for common patterns like:
+  • admin
+  • password  
+  • 123456
+  • NAVIGATOR`;
         }
         
-        let result = `[INFO] Found ${matches.length} matches for pattern: ${pattern}\n\n`;
+        let result = `[INFO] Found ${matches.length} matches for pattern: "${pattern}"
+        
+`;
         result += matches.join('\n');
         
         // Track progress based on what they're searching for
@@ -332,12 +514,13 @@ the primary method space pirates use to compromise security systems.
 🚀 Next Mission: Social Engineering Defense
    Report to the Bridge to continue your training!`;
         } else {
-            return `[ERROR] Invalid flag: ${submittedFlag}
+            return `[ERROR] Invalid flag: "${submittedFlag}"
 
 The flag should be in the format: NAVIGATOR{...}
 Look more carefully through the password database for the hidden pattern.
 
-💡 HINT: Check admin accounts with unusual password patterns...`;
+💡 HINT: Check admin accounts with unusual password patterns...
+💡 TIP: Try using 'grep NAVIGATOR crew_passwords.txt' to find it!`;
         }
     }
     

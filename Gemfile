@@ -1,17 +1,38 @@
+# Gemfile for Navigator's Codebook Jekyll Project
+
 source "https://rubygems.org"
 
-# GitHub Pages gem - this controls all other versions
-gem "github-pages", group: :jekyll_plugins
+# Jekyll version
+gem "jekyll", "~> 4.3.0"
 
-# Additional plugins (these are already included in github-pages)
-group :jekyll_plugins do
-  gem "jekyll-feed"
-  gem "jekyll-sitemap"
-  gem "jekyll-seo-tag"
-end
+# Essential Jekyll plugins
+gem "jekyll-sass-converter", "~> 3.0"
+gem "jekyll-feed", "~> 0.12"
+gem "jekyll-sitemap", "~> 1.3"
+gem "jekyll-seo-tag", "~> 2.6"
+
+# Ruby 3.4+ compatibility - standard library gems that are no longer defaults
+gem "csv"
+gem "logger"
+gem "ostruct"
+gem "base64"
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+# and associated library.
+platforms :mingw, :x64_mingw, :mswin, :jruby do
+  gem "tzinfo", ">= 1", "< 3"
+  gem "tzinfo-data"
+end
 
-# Note: Removed wdm gem due to Ruby 3.4.0 compatibility issues
-# Jekyll will work fine without it, just slightly slower file watching
+# NOTE: wdm gem disabled due to Ruby 3.4.0 compatibility issues
+# Performance-booster for watching directories on Windows
+# gem "wdm", "~> 0.1.1", :platforms => [:mingw, :x64_mingw, :mswin]
+
+# Lock `http_parser.rb` gem to `v0.6.x` on JRuby builds since newer versions of the gem
+# do not have a Java counterpart.
+gem "http_parser.rb", "~> 0.6.0", :platforms => [:jruby]
+
+# Additional dependencies for development
+group :development do
+  gem "webrick", "~> 1.8"
+end

@@ -12,6 +12,7 @@ class TerminalEngine {
         this.isLocked = false;
         this.outputBuffer = [];
         this.challengeData = null;
+        this.userScrolling = false; // ADD THIS LINE
         
         this.init();
     }
@@ -76,6 +77,7 @@ class TerminalEngine {
         `;
 
         this.setupInputHandlers();
+        this.setupScrollBehavior(); // ADD THIS LINE
         this.focusTerminal();
     }
 
@@ -106,6 +108,32 @@ class TerminalEngine {
             }
         });
     }
+
+    setupScrollBehavior() {
+    const output = document.getElementById('terminalOutput');
+    if (output) {
+        let scrollTimeout;
+        
+        // Track user scrolling
+        output.addEventListener('scroll', () => {
+            this.userScrolling = true;
+            clearTimeout(scrollTimeout);
+            
+            // Check if user scrolled to bottom
+            scrollTimeout = setTimeout(() => {
+                const isAtBottom = output.scrollTop + output.clientHeight >= output.scrollHeight - 10;
+                if (isAtBottom) {
+                    this.userScrolling = false;
+                }
+            }, 1000);
+        });
+        
+        // Allow clicking without auto-scroll
+        output.addEventListener('mousedown', () => {
+            this.userScrolling = true;
+        });
+    }
+}
 
     // =============================================================================
     // COMMAND PROCESSING
@@ -164,7 +192,8 @@ class TerminalEngine {
             .replace(/\[ERROR\]/g, '<span class="error-text">[ERROR]</span>')
             .replace(/\[WARNING\]/g, '<span class="warning-text">[WARNING]</span>')
             .replace(/\[INFO\]/g, '<span class="info-text">[INFO]</span>')
-            .replace(/`([^`]+)`/g, '<code>$1</code>');
+            .replace(/`([^`]+)`/g, '<code>$1</code>')
+            .replace(/\n/g, '<br>'); // ADD THIS LINE - converts newlines to HTML breaks
     }
 
     // =============================================================================
@@ -492,11 +521,14 @@ DESCRIPTION
     }
 
     scrollToBottom() {
+    // Only auto-scroll if user isn't manually scrolling
+    if (!this.userScrolling) {
         const output = document.getElementById('terminalOutput');
         if (output) {
             output.scrollTop = output.scrollHeight;
         }
     }
+}
 
     lockTerminal() {
         this.isLocked = true;
