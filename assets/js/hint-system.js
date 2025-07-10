@@ -2,7 +2,7 @@
 // HINT SYSTEM - Manages progressive hints and walkthroughs
 // =============================================================================
 
-class HintSystem {
+class HintSystemMain {
     constructor() {
         this.hintsUsed = 0;
         this.availableHints = 3;
@@ -180,5 +180,5 @@ class HintSystem {
 }
 
 // Initialize hint system
-window.hintSystem = new HintSystem();
+window.hintSystem = new HintSystemMain();
 console.log('💡 Hint System initialized');

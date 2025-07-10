@@ -1,3 +1,5 @@
+// REPLACE the entire challenge-controller.js file with this clean version:
+
 // =============================================================================
 // CHALLENGE CONTROLLER - Coordinates challenge components
 // =============================================================================
@@ -8,6 +10,7 @@ class ChallengeController {
         this.startTime = Date.now();
         this.objectives = [];
         this.isCompleted = false;
+        this.timerInterval = null;
         
         this.init();
     }
@@ -19,21 +22,129 @@ class ChallengeController {
         console.log('✅ Challenge Controller ready');
     }
 
+    // =============================================================================
+    // IMPROVED TIMER SYSTEM
+    // =============================================================================
+
     startTimer() {
-        setInterval(() => {
-            const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
-            const minutes = Math.floor(elapsed / 60);
-            const seconds = elapsed % 60;
+        console.log('⏱️ Initializing challenge timer...');
+        
+        // Function to find or create timer element
+        const ensureTimerElement = () => {
+            let timerEl = document.getElementById('challengeTimer');
             
-            const timerEl = document.getElementById('challengeTimer');
-            if (timerEl) {
-                const timeText = timerEl.querySelector('.timer-text');
-                if (timeText) {
-                    timeText.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            if (!timerEl) {
+                console.log('🔍 Timer element not found, searching for alternatives...');
+                
+                // Try to find timer in different locations
+                timerEl = document.querySelector('.timer-display');
+                if (!timerEl) {
+                    timerEl = document.querySelector('[id*="timer"]');
+                }
+                if (!timerEl) {
+                    timerEl = document.querySelector('.challenge-header .timer-text');
+                }
+                
+                // If still not found, create it
+                if (!timerEl) {
+                    console.log('🔧 Creating timer element...');
+                    const header = document.querySelector('.challenge-header .challenge-status');
+                    if (header) {
+                        const timerDiv = document.createElement('div');
+                        timerDiv.className = 'timer-display';
+                        timerDiv.id = 'challengeTimer';
+                        timerDiv.innerHTML = `
+                            <span class="timer-icon">⏱️</span>
+                            <span class="timer-text">00:00</span>
+                        `;
+                        header.appendChild(timerDiv);
+                        timerEl = timerDiv;
+                    }
                 }
             }
-        }, 1000);
+            
+            return timerEl;
+        };
+        
+        // Wait for timer element to be available
+        const waitForTimer = () => {
+            return new Promise((resolve) => {
+                let attempts = 0;
+                const checkForTimer = () => {
+                    const timerEl = ensureTimerElement();
+                    attempts++;
+                    
+                    if (timerEl) {
+                        console.log(`✅ Timer element found after ${attempts} attempts`);
+                        resolve(timerEl);
+                    } else if (attempts < 50) {
+                        setTimeout(checkForTimer, 100);
+                    } else {
+                        console.warn('⚠️ Timer element not found after 5 seconds');
+                        resolve(null);
+                    }
+                };
+                checkForTimer();
+            });
+        };
+        
+        // Start timer once element is ready
+        waitForTimer().then((timerEl) => {
+            if (!timerEl) {
+                console.error('❌ Could not initialize timer - element not found');
+                return;
+            }
+            
+            console.log('🚀 Starting challenge timer...');
+            
+            // Store timer interval ID for cleanup
+            this.timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                
+                // Re-check timer element each time (in case of DOM changes)
+                const currentTimerEl = document.getElementById('challengeTimer') || timerEl;
+                
+                if (currentTimerEl) {
+                    let timeText = currentTimerEl.querySelector('.timer-text');
+                    
+                    // If timer-text span doesn't exist, create it
+                    if (!timeText) {
+                        timeText = document.createElement('span');
+                        timeText.className = 'timer-text';
+                        currentTimerEl.appendChild(timeText);
+                    }
+                    
+                    const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    timeText.textContent = timeString;
+                    
+                    // Debug log every 30 seconds
+                    if (elapsed % 30 === 0 && elapsed > 0) {
+                        console.log(`⏱️ Timer update: ${timeString} (${elapsed}s elapsed)`);
+                    }
+                } else {
+                    console.warn('⚠️ Timer element disappeared, attempting to re-find...');
+                    clearInterval(this.timerInterval);
+                    this.startTimer(); // Restart timer detection
+                }
+            }, 1000);
+            
+            console.log('✅ Timer started successfully');
+        });
     }
+
+    cleanup() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+            console.log('🛑 Timer stopped');
+        }
+    }
+
+    // =============================================================================
+    // OBJECTIVES MANAGEMENT
+    // =============================================================================
 
     loadObjectives() {
         const objectiveItems = document.querySelectorAll('.objective-item');
@@ -43,6 +154,8 @@ class ChallengeController {
             completed: false,
             element: item
         }));
+        
+        console.log(`📋 Loaded ${this.objectives.length} objectives`);
     }
 
     completeObjective(objectiveId) {
@@ -61,8 +174,11 @@ class ChallengeController {
         }
     }
 
+    // =============================================================================
+    // CHALLENGE COMPLETION
+    // =============================================================================
+
     submitSolution() {
-        // This would normally validate the solution
         console.log('🚀 Solution submitted');
         this.completeObjective(1); // For testing, complete first objective
         
@@ -136,156 +252,98 @@ class ChallengeController {
 
     reviewSolution() {
         console.log('📋 Reviewing solution...');
-        // Close success modal and show solution review
         document.getElementById('successModal').style.display = 'none';
     }
 
     continueToNext() {
         console.log('➡️ Continuing to next challenge...');
-        // For now, just return to bridge
         this.returnToBridge();
     }
 }
 
 // =============================================================================
-// HINT SYSTEM (Basic Implementation)
-// =============================================================================
-
-class HintSystem {
-    constructor() {
-        this.hintsUsed = 0;
-        this.availableHints = 3;
-        this.hints = [
-            "Try using the 'help' command to see available tools.",
-            "Use 'ls' to list files in the current directory.",
-            "The 'cat' command can help you read file contents."
-        ];
-    }
-
-    requestHint() {
-        if (this.hintsUsed >= this.availableHints) {
-            this.showNoMoreHints();
-            return;
-        }
-
-        const hint = this.hints[this.hintsUsed];
-        this.showHint(hint);
-        this.hintsUsed++;
-        this.updateHintCounter();
-    }
-
-    showHint(hintText) {
-        const modal = document.getElementById('hintModal');
-        const content = document.getElementById('hintContent');
-        
-        if (content) {
-            content.innerHTML = `
-                <div class="hint-display">
-                    <div class="xis-hint-header">
-                        <div class="xis-avatar-hint">🤖</div>
-                        <div class="xis-speech">
-                            <p><strong>X.I.S. Guidance:</strong></p>
-                            <p>${hintText}</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        if (modal) {
-            modal.style.display = 'flex';
-        }
-    }
-
-    showNoMoreHints() {
-        const modal = document.getElementById('hintModal');
-        const content = document.getElementById('hintContent');
-        
-        if (content) {
-            content.innerHTML = `
-                <div class="hint-display">
-                    <div class="xis-hint-header">
-                        <div class="xis-avatar-hint">🤖</div>
-                        <div class="xis-speech">
-                            <p><strong>X.I.S. Response:</strong></p>
-                            <p>I've provided all the guidance I can, Navigator. You have the tools and knowledge needed to complete this challenge!</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        if (modal) {
-            modal.style.display = 'flex';
-        }
-    }
-
-    updateHintCounter() {
-        const hintCount = document.getElementById('hintCount');
-        if (hintCount) {
-            const remaining = this.availableHints - this.hintsUsed;
-            hintCount.textContent = `(${remaining} available)`;
-        }
-    }
-
-    showWalkthrough() {
-        const modal = document.getElementById('walkthroughModal');
-        const content = document.getElementById('walkthroughContent');
-        
-        if (content) {
-            content.innerHTML = `
-                <div class="walkthrough-display">
-                    <h3>🧠 Complete Solution Walkthrough</h3>
-                    <div class="walkthrough-steps">
-                        <div class="step">
-                            <strong>Step 1:</strong> Use the 'help' command to see available tools
-                        </div>
-                        <div class="step">
-                            <strong>Step 2:</strong> Explore the file system with 'ls' and 'cd'
-                        </div>
-                        <div class="step">
-                            <strong>Step 3:</strong> Use appropriate tools to complete the challenge
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        if (modal) {
-            modal.style.display = 'flex';
-        }
-    }
-
-    closeHint() {
-        document.getElementById('hintModal').style.display = 'none';
-    }
-
-    closeWalkthrough() {
-        document.getElementById('walkthroughModal').style.display = 'none';
-    }
-
-    nextHint() {
-        this.closeHint();
-        setTimeout(() => this.requestHint(), 300);
-    }
-
-    implementSolution() {
-        this.closeWalkthrough();
-        // Auto-complete the challenge for walkthrough users
-        challengeController.completeChallenge();
-    }
-}
-
-// =============================================================================
-// INITIALIZATION
+// IMPROVED INITIALIZATION (NO DUPLICATE HINTSYSTEM)
 // =============================================================================
 
 let challengeController;
-let hintSystem;
 
-document.addEventListener('DOMContentLoaded', function() {
-    challengeController = new ChallengeController();
-    hintSystem = new HintSystem();
+// Better initialization that waits for all elements to be ready
+function initializeChallengeController() {
+    console.log('🔄 Initializing challenge controller...');
     
-    console.log('🎯 Challenge framework fully operational');
+    // Wait for critical elements to exist
+    const waitForElements = () => {
+        return new Promise((resolve) => {
+            let attempts = 0;
+            const checkElements = () => {
+                attempts++;
+                
+                // Check for critical elements
+                const hasTimer = document.querySelector('.timer-display, #challengeTimer, [class*="timer"]');
+                const hasObjectives = document.querySelector('.objective-item');
+                const hasWorkspace = document.getElementById('challengeWorkspace');
+                
+                if (hasTimer && hasObjectives && hasWorkspace) {
+                    console.log(`✅ All elements ready after ${attempts} attempts`);
+                    resolve(true);
+                } else if (attempts < 100) { // Wait up to 10 seconds
+                    setTimeout(checkElements, 100);
+                } else {
+                    console.warn('⚠️ Some elements still missing, proceeding anyway...');
+                    resolve(false);
+                }
+            };
+            checkElements();
+        });
+    };
+    
+    // Initialize once elements are ready
+    waitForElements().then(() => {
+        try {
+            challengeController = new ChallengeController();
+            
+            // Make globally accessible for debugging
+            window.challengeController = challengeController;
+            
+            console.log('🎯 Challenge Controller initialized successfully');
+            
+            // Verify timer is working after a short delay
+            setTimeout(() => {
+                const timerEl = document.getElementById('challengeTimer');
+                if (timerEl && timerEl.querySelector('.timer-text')) {
+                    console.log('✅ Timer verification successful');
+                } else {
+                    console.warn('⚠️ Timer verification failed - may need manual restart');
+                }
+            }, 2000);
+            
+        } catch (error) {
+            console.error('❌ Failed to initialize challenge controller:', error);
+        }
+    });
+}
+
+// Multiple initialization triggers to ensure it works
+document.addEventListener('DOMContentLoaded', initializeChallengeController);
+
+// Fallback initialization for slower-loading pages
+window.addEventListener('load', () => {
+    if (!challengeController) {
+        console.log('🔄 Fallback controller initialization triggered');
+        initializeChallengeController();
+    }
 });
+
+// Emergency manual initialization function
+window.restartChallengeTimer = function() {
+    if (challengeController) {
+        console.log('🔄 Manually restarting timer...');
+        challengeController.cleanup();
+        challengeController.startTimer();
+    } else {
+        console.log('🔄 Manually initializing challenge controller...');
+        initializeChallengeController();
+    }
+};
+
+console.log('🎯 Challenge Controller script loaded');
