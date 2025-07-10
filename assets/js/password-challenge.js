@@ -1,5 +1,5 @@
 // =============================================================================
-// PASSWORD CHALLENGE - Hints and Validation System
+// PASSWORD CHALLENGE - Fixed Integration with Framework
 // =============================================================================
 
 const PasswordChallengeData = {
@@ -36,97 +36,110 @@ const PasswordChallengeData = {
     // Challenge validation
     validation: {
         correctFlag: "NAVIGATOR{weak_passwords_compromise_security}",
-        
-        // Intermediate checkpoints for partial credit
-        checkpoints: {
-            "found_admin_password": {
-                pattern: /admin|administrator/i,
-                points: 25,
-                message: "✅ Good! You've identified admin accounts with weak passwords."
-            },
-            "found_common_patterns": {
-                patterns: ["password", "123456", "qwerty", "admin"],
-                points: 50, 
-                message: "✅ Excellent pattern recognition! You've found the most common weak passwords."
-            },
-            "extracted_flag": {
-                pattern: /NAVIGATOR\{[^}]+\}/,
-                points: 100,
-                message: "🎉 Outstanding! You've uncovered the pirates' infiltration method!"
-            }
-        }
-    },
-    
-    // Educational explanations
-    explanations: {
-        weakPatterns: [
-            "**Dictionary Words**: 'password', 'welcome', 'freedom' - easily cracked",
-            "**Sequential Numbers**: '123456', '12345' - first attempts in attacks", 
-            "**Keyboard Patterns**: 'qwerty' - predictable typing patterns",
-            "**Default Credentials**: 'admin', 'test' - commonly unchanged defaults",
-            "**Personal Names**: 'michelle', 'jordan' - guessable personal information"
-        ],
-        
-        realWorldImpact: "In real breaches, 81% of data breaches involve weak or stolen passwords. The patterns you found here mirror actual compromises like the 2019 Capital One breach, where weak credentials led to 100 million customer records being exposed.",
-        
-        defenseStrategies: [
-            "**Multi-Factor Authentication**: Even weak passwords become much safer",
-            "**Password Managers**: Generate and store unique, complex passwords",
-            "**Regular Password Audits**: Scan for weak passwords before attackers do",
-            "**Account Lockouts**: Prevent brute force attacks on weak passwords"
-        ]
     }
 };
 
 // =============================================================================
-// TERMINAL ENGINE - Enhanced for Password Challenge
+// PASSWORD CHALLENGE TERMINAL EXTENSIONS
 // =============================================================================
 
-class PasswordChallengeTerminal extends TerminalEngine {
+class PasswordChallengeExtension {
     constructor() {
-        super();
         this.evidenceLoaded = false;
         this.flagSubmitted = false;
-        this.hintsUsed = 0;
-        this.userScrolling = false;
+        this.passwordData = this.generatePasswordData();
         
-        this.registerPasswordCommands();
-        this.setupScrollBehavior();
+        this.init();
     }
     
-    setupScrollBehavior() {
-        // Prevent auto-scroll when user is manually scrolling
+    init() {
+        console.log('🔐 Password Challenge Extension initializing...');
+        
+        // Wait for terminal engine to be ready
+        this.waitForTerminal().then(() => {
+            this.enhanceTerminal();
+            this.setupEvidenceSystem();
+            this.updateHintSystem();
+            console.log('✅ Password Challenge Extension ready');
+        });
+    }
+    
+    async waitForTerminal() {
+        let attempts = 0;
+        while (!window.terminalEngine && attempts < 50) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        
+        if (!window.terminalEngine) {
+            throw new Error('Terminal engine not found');
+        }
+        
+        // Set up enhanced scroll behavior after terminal is ready
+        this.setupEnhancedScrollBehavior();
+    }
+    
+    setupEnhancedScrollBehavior() {
         const output = document.getElementById('terminalOutput');
         if (output) {
             let scrollTimeout;
+            let isUserScrolling = false;
             
+            // Track user scrolling
             output.addEventListener('scroll', () => {
-                this.userScrolling = true;
+                isUserScrolling = true;
                 clearTimeout(scrollTimeout);
+                
+                // Check if user scrolled to bottom
                 scrollTimeout = setTimeout(() => {
-                    // Check if user scrolled to bottom
                     const isAtBottom = output.scrollTop + output.clientHeight >= output.scrollHeight - 10;
                     if (isAtBottom) {
-                        this.userScrolling = false;
+                        isUserScrolling = false;
                     }
-                }, 1000);
+                }, 1500); // Longer timeout
             });
-        }
-    }
-    
-    // Override scrollToBottom to respect user scrolling
-    scrollToBottom() {
-        if (!this.userScrolling) {
-            const output = document.getElementById('terminalOutput');
-            if (output) {
-                output.scrollTop = output.scrollHeight;
+            
+            // Prevent auto-scroll when clicking/selecting
+            output.addEventListener('mousedown', () => {
+                isUserScrolling = true;
+            });
+            
+            // Prevent auto-scroll during text selection
+            output.addEventListener('selectstart', () => {
+                isUserScrolling = true;
+            });
+            
+            // Only reset after user stops interacting
+            output.addEventListener('mouseup', () => {
+                setTimeout(() => {
+                    const isAtBottom = output.scrollTop + output.clientHeight >= output.scrollHeight - 10;
+                    if (isAtBottom) {
+                        isUserScrolling = false;
+                    }
+                }, 2000); // Longer delay
+            });
+            
+            // Override terminal engine's scroll behavior
+            if (window.terminalEngine) {
+                const originalScrollToBottom = window.terminalEngine.scrollToBottom;
+                window.terminalEngine.scrollToBottom = function() {
+                    if (!isUserScrolling) {
+                        originalScrollToBottom.call(this);
+                    }
+                };
             }
         }
     }
     
-    registerPasswordCommands() {
-        // Enhanced help command with proper formatting
-        this.commands.set('help', () => {
+    enhanceTerminal() {
+        const terminal = window.terminalEngine;
+        
+        // Store original commands to avoid conflicts
+        const originalCat = terminal.commands.get('cat');
+        const originalHelp = terminal.commands.get('help');
+        
+        // Enhanced help command
+        terminal.commands.set('help', () => {
             return `Available commands:
 
 cat <filename>      - Display file contents
@@ -146,8 +159,8 @@ submit NAVIGATOR{...}      - Submit discovered flag
 Type 'man <command>' for detailed information about specific commands.`;
         });
         
-        // Override cat command to handle evidence file
-        this.commands.set('cat', (args) => {
+        // Enhanced cat command
+        terminal.commands.set('cat', (args) => {
             if (args.length === 0) {
                 return '[ERROR] Usage: cat <filename>';
             }
@@ -160,18 +173,23 @@ Type 'man <command>' for detailed information about specific commands.`;
                 }
                 
                 // Mark objective complete
-                if (challengeController) {
-                    challengeController.completeObjective(1);
+                if (window.challengeController) {
+                    window.challengeController.completeObjective(1);
                 }
                 
                 return this.displayPasswordFile();
             }
             
+            // Fall back to original cat command for other files
+            if (originalCat) {
+                return originalCat(args);
+            }
+            
             return `[ERROR] File '${filename}' not found. Available files: crew_passwords.txt`;
         });
         
-        // Add grep command for pattern searching
-        this.commands.set('grep', (args) => {
+        // Add grep command
+        terminal.commands.set('grep', (args) => {
             if (args.length < 2) {
                 return '[ERROR] Usage: grep <pattern> <filename>\n\nExamples:\n  grep admin crew_passwords.txt\n  grep password crew_passwords.txt\n  grep NAVIGATOR crew_passwords.txt';
             }
@@ -190,35 +208,8 @@ Type 'man <command>' for detailed information about specific commands.`;
             return this.grepPasswordFile(pattern);
         });
         
-        // Add sort command for organizing data
-        this.commands.set('sort', (args) => {
-            if (args.length === 0) {
-                return '[ERROR] Usage: sort <filename>';
-            }
-            
-            const filename = args[0];
-            if (filename === 'crew_passwords.txt') {
-                if (!this.evidenceLoaded) {
-                    return '[ERROR] File not found.';
-                }
-                return this.sortPasswordFile();
-            }
-            
-            return '[ERROR] File not found.';
-        });
-        
-        // Add submit command for flag submission
-        this.commands.set('submit', (args) => {
-            if (args.length === 0) {
-                return '[ERROR] Usage: submit <flag>\n\nExample:\n  submit NAVIGATOR{your_discovered_flag}';
-            }
-            
-            const submittedFlag = args.join(' ');
-            return this.validateFlag(submittedFlag);
-        });
-        
-        // Add analyze command for automated analysis
-        this.commands.set('analyze', (args) => {
+        // Add analyze command
+        terminal.commands.set('analyze', (args) => {
             if (args.length === 0) {
                 return '[ERROR] Usage: analyze <filename>';
             }
@@ -234,76 +225,69 @@ Type 'man <command>' for detailed information about specific commands.`;
             return '[ERROR] File not found.';
         });
         
-        // Add man command for detailed help
-        this.commands.set('man', (args) => {
+        // Add submit command
+        terminal.commands.set('submit', (args) => {
             if (args.length === 0) {
-                return '[ERROR] Usage: man <command>\n\nExample: man grep';
+                return '[ERROR] Usage: submit <flag>\n\nExample:\n  submit NAVIGATOR{your_discovered_flag}';
             }
             
-            const command = args[0];
-            return this.getManPage(command);
+            const submittedFlag = args.join(' ');
+            return this.validateFlag(submittedFlag);
         });
     }
     
-    getManPage(command) {
-        const manPages = {
-            'cat': `CAT(1) - Display file contents
+    setupEvidenceSystem() {
+        // Replace the download function
+        window.downloadEvidenceFile = (filename) => {
+            // Create the evidence file content
+            const evidenceContent = this.generateCrewPasswordsFile();
             
-SYNOPSIS
-    cat <filename>
-    
-DESCRIPTION
-    Display the contents of a file to the terminal.
-    
-EXAMPLES
-    cat crew_passwords.txt    Display password database`,
-    
-            'grep': `GREP(1) - Search text patterns
+            // Create and trigger download
+            const blob = new Blob([evidenceContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
             
-SYNOPSIS
-    grep <pattern> <filename>
-    
-DESCRIPTION
-    Search for lines containing the specified pattern in a file.
-    
-EXAMPLES
-    grep admin crew_passwords.txt     Find admin accounts
-    grep password crew_passwords.txt  Find password patterns
-    grep NAVIGATOR crew_passwords.txt Find flags`,
-    
-            'analyze': `ANALYZE(1) - Security analysis tool
+            console.log('📁 Evidence file downloaded:', filename);
             
-SYNOPSIS
-    analyze <filename>
-    
-DESCRIPTION
-    Perform automated security analysis on data files.
-    
-EXAMPLES
-    analyze crew_passwords.txt    Run password security audit`,
-    
-            'submit': `SUBMIT(1) - Flag submission
+            // Load evidence into terminal
+            this.loadEvidence();
             
-SYNOPSIS
-    submit <flag>
-    
-DESCRIPTION
-    Submit discovered flags for validation.
-    
-EXAMPLES
-    submit NAVIGATOR{weak_passwords_compromise_security}`
+            // Update objectives
+            if (window.challengeController) {
+                window.challengeController.completeObjective(1);
+            }
         };
-        
-        return manPages[command] || `[ERROR] No manual page found for '${command}'`;
     }
     
-    displayPasswordFile() {
+    updateHintSystem() {
+        // Update the hint system with challenge-specific hints
+        if (window.hintSystem) {
+            window.hintSystem.updateHints(PasswordChallengeData.hints);
+        }
+    }
+    
+    loadEvidence() {
+        this.evidenceLoaded = true;
+        
+        if (window.terminalEngine) {
+            window.terminalEngine.addOutput('[INFO] Evidence file crew_passwords.txt loaded successfully.');
+            window.terminalEngine.addOutput('[INFO] Use "cat crew_passwords.txt" to examine the intercepted data.');
+        }
+    }
+    
+    generateCrewPasswordsFile() {
         return `# KEPLER STATION CREW PASSWORD DATABASE
 # INTERCEPTED FROM SPACE PIRATE DATA DUMP
 # CLASSIFICATION: RESTRICTED
 # 
 # FORMAT: username:password:role:last_access
-
+# 
 johnson:password123:engineer:2024-03-15
 smith:123456:technician:2024-03-14
 williams:qwerty:pilot:2024-03-13
@@ -368,16 +352,11 @@ cooper:delta:medic:2024-01-17
 richardson:echo:technician:2024-01-16
 cox:foxtrot:engineer:2024-01-15
 howard:bravo:pilot:2024-01-14
-ward:admin123:administrator:2024-03-18
-
-[INFO] File contains 65 user accounts with passwords and roles.
-[INFO] Use 'grep <pattern> crew_passwords.txt' to search for specific patterns.
-[INFO] Use 'analyze crew_passwords.txt' for automated security analysis.`;
+ward:admin123:administrator:2024-03-18`;
     }
     
-    grepPasswordFile(pattern) {
-        const matches = [];
-        const passwordData = [
+    generatePasswordData() {
+        return [
             'davis:admin:administrator:2024-03-16',
             'miller:password:security:2024-03-11',
             'smith:123456:technician:2024-03-14',
@@ -389,9 +368,20 @@ ward:admin123:administrator:2024-03-18
             'garcia:password1:technician:2024-02-29',
             'thompson:abc123:security:2024-03-01'
         ];
+    }
+    
+    displayPasswordFile() {
+        return this.generateCrewPasswordsFile() + `
+
+[INFO] File contains 65 user accounts with passwords and roles.
+[INFO] Use 'grep <pattern> crew_passwords.txt' to search for specific patterns.
+[INFO] Use 'analyze crew_passwords.txt' for automated security analysis.`;
+    }
+    
+    grepPasswordFile(pattern) {
+        const matches = [];
         
-        // Simple pattern matching
-        passwordData.forEach(line => {
+        this.passwordData.forEach(line => {
             if (line.toLowerCase().includes(pattern.toLowerCase())) {
                 matches.push(line);
             }
@@ -407,45 +397,24 @@ Try searching for common patterns like:
   • NAVIGATOR`;
         }
         
-        let result = `[INFO] Found ${matches.length} matches for pattern: "${pattern}"
-        
-`;
+        let result = `[INFO] Found ${matches.length} matches for pattern: "${pattern}"\n\n`;
         result += matches.join('\n');
         
         // Track progress based on what they're searching for
-        if (pattern.toLowerCase().includes('admin')) {
-            challengeController?.completeObjective(3);
+        if (pattern.toLowerCase().includes('admin') && window.challengeController) {
+            window.challengeController.completeObjective(3);
         }
-        if (pattern.toUpperCase().includes('NAVIGATOR')) {
-            challengeController?.completeObjective(4);
+        if (pattern.toUpperCase().includes('NAVIGATOR') && window.challengeController) {
+            window.challengeController.completeObjective(4);
         }
         
         return result;
     }
     
-    sortPasswordFile() {
-        return `[INFO] Sorting crew_passwords.txt by role...
-
-# ADMINISTRATORS (HIGHEST RISK)
-davis:admin:administrator:2024-03-16
-rivera:NAVIGATOR{weak_passwords_compromise_security}:admin:2024-03-17
-ward:admin123:administrator:2024-03-18
-
-# SECURITY PERSONNEL
-miller:password:security:2024-03-11
-thompson:abc123:security:2024-03-01
-martinez:trustno1:engineer:2024-02-28
-
-# ENGINEERS (45 accounts)
-# PILOTS (12 accounts)  
-# TECHNICIANS (8 accounts)
-# MEDICS (5 accounts)
-
-[WARNING] Administrative accounts show critical security vulnerabilities!`;
-    }
-    
     analyzePasswordSecurity() {
-        challengeController?.completeObjective(2);
+        if (window.challengeController) {
+            window.challengeController.completeObjective(2);
+        }
         
         return `[INFO] Running automated password security analysis...
 
@@ -485,11 +454,13 @@ martinez:trustno1:engineer:2024-02-28
         
         if (submittedFlag === correctFlag) {
             this.flagSubmitted = true;
-            challengeController?.completeObjective(5);
             
-            setTimeout(() => {
-                challengeController?.completeChallenge();
-            }, 1000);
+            if (window.challengeController) {
+                window.challengeController.completeObjective(5);
+                setTimeout(() => {
+                    window.challengeController.completeChallenge();
+                }, 1000);
+            }
             
             return `[SUCCESS] 🎉 FLAG VALIDATED! 🎉
 
@@ -523,36 +494,18 @@ Look more carefully through the password database for the hidden pattern.
 💡 TIP: Try using 'grep NAVIGATOR crew_passwords.txt' to find it!`;
         }
     }
-    
-    // Mark evidence as loaded when download button is clicked
-    loadEvidence() {
-        this.evidenceLoaded = true;
-        this.addOutput('[INFO] Evidence file crew_passwords.txt loaded successfully.');
-        this.addOutput('[INFO] Use "cat crew_passwords.txt" to examine the intercepted data.');
-    }
 }
 
 // =============================================================================
-// INTEGRATION WITH EXISTING FRAMEWORK
+// INITIALIZATION - Wait for framework to be ready
 // =============================================================================
 
-// Override the existing terminal for this specific challenge
-if (typeof challengeController !== 'undefined') {
-    // Replace terminal engine with challenge-specific version
-    window.terminalEngine = new PasswordChallengeTerminal();
-    
-    // Update hint system with challenge-specific hints
-    if (typeof hintSystem !== 'undefined') {
-        hintSystem.hints = PasswordChallengeData.hints;
-        hintSystem.availableHints = PasswordChallengeData.hints.length;
-    }
-}
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait a bit for other scripts to load, then initialize
+    setTimeout(() => {
+        window.passwordChallenge = new PasswordChallengeExtension();
+        console.log('🔐 Password Challenge fully operational');
+    }, 500);
+});
 
-// Expose globally for the download button
-window.loadPasswordEvidence = function() {
-    if (window.terminalEngine && window.terminalEngine.loadEvidence) {
-        window.terminalEngine.loadEvidence();
-    }
-};
-
-console.log('🔐 Password Challenge System loaded successfully!');
+console.log('🔐 Password Challenge script loaded');
