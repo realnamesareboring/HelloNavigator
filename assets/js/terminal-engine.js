@@ -93,39 +93,63 @@ class TerminalEngine {
             }
         });
 
-        // Click to focus
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('.terminal-container')) {
-                this.focusTerminal();
-            }
+        // IMPROVED: Only focus on input area clicks, not entire terminal
+        input.addEventListener('click', () => {
+            this.focusTerminal();
         });
+        
+        // IMPROVED: Only focus when clicking the input container, not output area
+        const inputContainer = input.closest('.terminal-input-container');
+        if (inputContainer) {
+            inputContainer.addEventListener('click', () => {
+                this.focusTerminal();
+            });
+        }
     }
 
     setupScrollBehavior() {
-    const output = document.getElementById('terminalOutput');
-    if (output) {
-        let scrollTimeout;
+        const output = document.getElementById('terminalOutput');
+        if (!output) return;
         
-        // Track user scrolling
+        let scrollTimeout;
+        let userIsInteracting = false;
+        
+        // Track when user is actively scrolling/interacting
         output.addEventListener('scroll', () => {
-            this.userScrolling = true;
+            userIsInteracting = true;
             clearTimeout(scrollTimeout);
             
-            // Check if user scrolled to bottom
+            // Only reset if user scrolls all the way to bottom
             scrollTimeout = setTimeout(() => {
-                const isAtBottom = output.scrollTop + output.clientHeight >= output.scrollHeight - 10;
+                const isAtBottom = output.scrollTop + output.clientHeight >= output.scrollHeight - 5;
                 if (isAtBottom) {
-                    this.userScrolling = false;
+                    userIsInteracting = false;
                 }
-            }, 1000);
+            }, 2000); // Give user time to read
         });
         
-        // Allow clicking without auto-scroll
-        output.addEventListener('mousedown', () => {
-            this.userScrolling = true;
+        // Prevent auto-scroll during text selection or clicking
+        output.addEventListener('mousedown', (e) => {
+            userIsInteracting = true;
         });
+        
+        output.addEventListener('selectstart', () => {
+            userIsInteracting = true;
+        });
+        
+        // Store the flag on the terminal engine instance
+        this.userInteracting = false;
+        
+        // Update the user interaction state
+        const updateInteractionState = (state) => {
+            this.userInteracting = state;
+            userIsInteracting = state;
+        };
+        
+        output.addEventListener('scroll', () => updateInteractionState(true));
+        output.addEventListener('mousedown', () => updateInteractionState(true));
+        output.addEventListener('selectstart', () => updateInteractionState(true));
     }
-}
 
     // =============================================================================
     // COMMAND PROCESSING
@@ -513,14 +537,18 @@ DESCRIPTION
     }
 
     scrollToBottom() {
-    // Only auto-scroll if user isn't manually scrolling
-    if (!this.userScrolling) {
-        const output = document.getElementById('terminalOutput');
-        if (output) {
-            output.scrollTop = output.scrollHeight;
+        // Only auto-scroll if user isn't actively reading/interacting
+        if (!this.userInteracting) {
+            const output = document.getElementById('terminalOutput');
+            if (output) {
+                // Smooth scroll instead of instant jump
+                output.scrollTo({
+                    top: output.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
         }
     }
-}
 
     lockTerminal() {
         this.isLocked = true;

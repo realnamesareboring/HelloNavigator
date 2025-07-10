@@ -76,9 +76,9 @@ class PasswordChallengeExtension {
         }
         
         // Set up enhanced scroll behavior after terminal is ready
-        this.setupEnhancedScrollBehavior();
+
     }
-    
+/*   
     setupEnhancedScrollBehavior() {
         const output = document.getElementById('terminalOutput');
         if (output) {
@@ -130,7 +130,7 @@ class PasswordChallengeExtension {
             }
         }
     }
-    
+*/  
     enhanceTerminal() {
         const terminal = window.terminalEngine;
         
