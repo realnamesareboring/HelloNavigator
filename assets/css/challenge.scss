@@ -410,7 +410,7 @@ $warning-amber: #ffbf00;
         border-radius: 0;
     }
 }
-
+/*
 .terminal-header {
     display: flex;
     justify-content: space-between;
@@ -446,9 +446,9 @@ $warning-amber: #ffbf00;
         }
     }
 }
-
+*/
 .terminal-body {
-    height: calc(100% - 60px);
+    height: 100%; /* CHANGED FROM: height: calc(100% - 60px); */
     display: flex;
     flex-direction: column;
 }
@@ -596,33 +596,6 @@ $warning-amber: #ffbf00;
     backdrop-filter: blur(10px);
 }
 
-.tools-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    
-    .tool-btn {
-        width: 100%;
-        padding: 0.75rem;
-        background: linear-gradient(135deg, #444, #666);
-        color: white;
-        border: none;
-        font-family: 'Orbitron', sans-serif;
-        font-size: 0.8rem;
-        cursor: pointer;
-        clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        
-        &:hover {
-            background: linear-gradient(135deg, $secondary-orange, #cc6600);
-            transform: translateX(3px);
-        }
-    }
-}
-
 .resources-list {
     display: flex;
     flex-direction: column;
@@ -680,8 +653,12 @@ $warning-amber: #ffbf00;
         flex-direction: row;
         overflow-x: auto;
         
-        .tools-section, .resources-section, .achievements-section {
-            min-width: 200px;
+        .resources-section, .achievements-section {
+            background: rgba(0, 30, 60, 0.8);
+            border: 2px solid $secondary-orange;
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
         }
     }
 }

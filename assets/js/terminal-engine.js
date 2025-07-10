@@ -36,24 +36,16 @@ class TerminalEngine {
     // TERMINAL INTERFACE SETUP
     // =============================================================================
 
+// In assets/js/terminal-engine.js
+// FIND the setupTerminalInterface() method and REPLACE with this clean version:
+
     setupTerminalInterface() {
         const workspace = document.getElementById('challengeWorkspace');
         if (!workspace) return;
 
+        // CLEAN VERSION - No header with colored buttons
         workspace.innerHTML = `
             <div class="terminal-container">
-                <div class="terminal-header">
-                    <div class="terminal-title">
-                        <span class="terminal-icon">⚡</span>
-                        <span>Navigator Terminal v2.4.1</span>
-                    </div>
-                    <div class="terminal-controls">
-                        <button class="terminal-btn minimize">−</button>
-                        <button class="terminal-btn maximize">□</button>
-                        <button class="terminal-btn close">✕</button>
-                    </div>
-                </div>
-                
                 <div class="terminal-body">
                     <div class="terminal-output" id="terminalOutput">
                         <div class="boot-sequence">
@@ -70,14 +62,14 @@ class TerminalEngine {
                     <div class="terminal-input-container">
                         <span class="terminal-prompt" id="terminalPrompt">navigator@uss-navigator:~$ </span>
                         <input type="text" class="terminal-input" id="terminalInput" 
-                               placeholder="Enter command..." autocomplete="off">
+                            placeholder="Enter command..." autocomplete="off" spellcheck="false">
                     </div>
                 </div>
             </div>
         `;
 
         this.setupInputHandlers();
-        this.setupScrollBehavior(); // ADD THIS LINE
+        this.setupScrollBehavior();
         this.focusTerminal();
     }
 

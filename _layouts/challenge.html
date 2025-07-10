@@ -106,11 +106,6 @@
                         <span class="workspace-icon">{{ page.workspace_icon | default: "💻" }}</span>
                         <span class="workspace-name">{{ page.workspace_name | default: "Cybersecurity Terminal" }}</span>
                     </div>
-                    <div class="workspace-controls">
-                        <button class="control-btn" onclick="terminalEngine.clearTerminal()">Clear</button>
-                        <button class="control-btn" onclick="terminalEngine.resetChallenge()">Reset</button>
-                        <button class="control-btn" onclick="terminalEngine.toggleFullscreen()">Fullscreen</button>
-                    </div>
                 </div>
                 
                 <div class="workspace-content">
@@ -143,19 +138,7 @@
             </main>
 
             <!-- Right Panel: Tools & Resources -->
-            <aside class="tools-panel">
-                <div class="tools-section">
-                    <h3 class="section-title">🔧 Tools</h3>
-                    <div class="tools-list" id="availableTools">
-                        {% for tool in page.available_tools %}
-                        <button class="tool-btn" onclick="terminalEngine.loadTool('{{ tool.id }}')">
-                            <span class="tool-icon">{{ tool.icon }}</span>
-                            <span class="tool-name">{{ tool.name }}</span>
-                        </button>
-                        {% endfor %}
-                    </div>
-                </div>
-                
+            <aside class="tools-panel">               
                 <div class="resources-section">
                     <h3 class="section-title">📚 Resources</h3>
                     <div class="resources-list">
