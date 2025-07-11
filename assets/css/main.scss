@@ -466,3 +466,163 @@ body {
         padding: 1rem;
     }
 }
+/* Add to assets/css/main.css or create assets/css/module.css */
+
+/* Return to Bridge Button Styling */
+.return-to-bridge,
+.btn-return {
+    background: linear-gradient(135deg, #00ffff, #0080ff);
+    color: #000;
+    border: 2px solid #00ffff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.return-to-bridge:hover,
+.btn-return:hover {
+    background: linear-gradient(135deg, #00ff80, #00ffff);
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+    transform: translateY(-2px);
+}
+
+/* Quick Reference Container */
+.quick-reference {
+    background: rgba(0, 20, 40, 0.8);
+    border: 1px solid #00ffff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    backdrop-filter: blur(10px);
+}
+
+.quick-reference h3 {
+    color: #00ffff;
+    font-family: 'Orbitron', sans-serif;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #00ffff;
+    padding-bottom: 0.5rem;
+}
+
+.quick-reference ul {
+    list-style: none;
+    padding: 0;
+}
+
+.quick-reference li {
+    margin: 0.75rem 0;
+    padding: 0.5rem;
+    background: rgba(0, 255, 255, 0.05);
+    border-left: 3px solid #00ffff;
+    border-radius: 4px;
+}
+
+.quick-reference a {
+    color: #00ffff;
+    text-decoration: none;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.quick-reference a:hover {
+    color: #ffff00;
+    text-shadow: 0 0 5px #ffff00;
+}
+
+/* Progress Container */
+.progress-container,
+.your-progress {
+    background: rgba(0, 40, 20, 0.8);
+    border: 1px solid #00ff80;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    backdrop-filter: blur(10px);
+}
+
+.progress-container h3,
+.your-progress h3 {
+    color: #00ff80;
+    font-family: 'Orbitron', sans-serif;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #00ff80;
+    padding-bottom: 0.5rem;
+}
+
+.progress-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0, 255, 128, 0.2);
+}
+
+.progress-item:last-child {
+    border-bottom: none;
+}
+
+.progress-label {
+    color: #ffffff;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.progress-status {
+    color: #00ff80;
+    font-weight: bold;
+}
+
+.progress-status.completed {
+    color: #00ff00;
+}
+
+.progress-status.locked {
+    color: #ff8000;
+}
+
+/* Mission Brief Spacing */
+.mission-brief ul {
+    line-height: 2;
+}
+
+.mission-brief li {
+    margin-bottom: 1rem;
+    padding: 0.5rem 0;
+}
+
+/* Objectives List Spacing */
+.objectives-list li {
+    margin-bottom: 1.5rem;
+    padding: 0.75rem;
+    background: rgba(0, 255, 255, 0.05);
+    border-radius: 6px;
+    border-left: 3px solid #00ffff;
+}
+
+/* Submit Solution Button */
+.submit-solution-btn {
+    background: linear-gradient(135deg, #ff8000, #ff4000);
+    color: #ffffff;
+    border: 2px solid #ff8000;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(255, 128, 0, 0.3);
+}
+
+.submit-solution-btn:hover {
+    background: linear-gradient(135deg, #ffaa00, #ff8000);
+    box-shadow: 0 0 25px rgba(255, 128, 0, 0.6);
+    transform: translateY(-2px);
+}
+
+/* Hide Need Help Section */
+.need-help {
+    display: none;
+}

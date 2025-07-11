@@ -57,44 +57,41 @@ custom_js:
                 </div>
             </div>
             
+            <!-- Mission Objectives -->
             <div class="mission-objectives">
                 <h3>🎯 Mission Objectives</h3>
                 <ul class="objectives-list">
-                    <li>Analyze compromised password databases</li>
-                    <li>Identify social engineering techniques</li>
-                    <li>Implement two-factor authentication</li>
-                    <li>Investigate account compromises</li>
-                    <li>Restore secure identity protocols</li>
-                </ul>
-            </div>
-            
-            <div class="learning-outcomes">
-                <h3>📚 What You'll Learn</h3>
-                <ul class="outcomes-list">
-                    <li><strong>Password Security:</strong> Identifying weak patterns and implementing strong policies</li>
-                    <li><strong>Social Engineering:</strong> Recognizing manipulation tactics and human vulnerabilities</li>
-                    <li><strong>Multi-Factor Auth:</strong> Understanding layered authentication defenses</li>
-                    <li><strong>Identity Forensics:</strong> Investigating compromised accounts and access patterns</li>
+                    <li data-objective-id="password-security">
+                        <span class="objective-icon">🔐</span>
+                        <span class="objective-text">Analyze compromised password databases</span>
+                    </li>
+                    <li data-objective-id="social-engineering">
+                        <span class="objective-icon">🎭</span>
+                        <span class="objective-text">Investigate deceptive communications</span>
+                    </li>
+                    <li data-objective-id="multi-factor">
+                        <span class="objective-icon">🛡️</span>
+                        <span class="objective-text">Implement multi-factor defense systems</span>
+                    </li>
+                    <li data-objective-id="forensics">
+                        <span class="objective-icon">🔬</span>
+                        <span class="objective-text">Conduct identity breach investigation</span>
+                    </li>
                 </ul>
             </div>
         </aside>
 
-        <!-- Center Panel: Challenge List -->
+        <!-- Center Panel: Challenges -->
         <main class="challenges-panel">
-            <div class="panel-header">
-                <h2>🔐 Security Protocols</h2>
-                <p>Complete these challenges in order to restore the Identity Defense Grid</p>
-            </div>
-            
             <div class="challenges-grid">
-                <!-- Challenge 1: Password Security -->
+                <!-- Challenge 1: Space Pirate Password Breach -->
                 <div class="challenge-card available" onclick="enterChallenge('password-breach')">
-                    <div class="challenge-icon">🔍</div>
-                    <div class="challenge-content">
+                    <div class="challenge-icon">🔐</div>
+                    <div class="challenge-info">
                         <h3 class="challenge-title">Space Pirate Password Breach</h3>
                         <p class="challenge-description">
-                            Analyze intercepted password data to identify security vulnerabilities and 
-                            uncover the pirates' infiltration methods.
+                            Analyze intercepted password data to identify security vulnerabilities and uncover the 
+                            pirates' infiltration methods.
                         </p>
                         <div class="challenge-meta">
                             <span class="difficulty beginner">Beginner</span>
@@ -108,19 +105,19 @@ custom_js:
                         </div>
                     </div>
                     <div class="challenge-status">
-                        <div class="status-indicator unlocked">🔓</div>
+                        <div class="status-indicator available">🔓</div>
                         <span class="status-text">Available</span>
                     </div>
                 </div>
 
-                <!-- Challenge 2: Social Engineering -->
+                <!-- Challenge 2: Deceptive Communications -->
                 <div class="challenge-card locked" onclick="showRequirements('social-engineering')">
                     <div class="challenge-icon">🎭</div>
-                    <div class="challenge-content">
+                    <div class="challenge-info">
                         <h3 class="challenge-title">Deceptive Communications</h3>
                         <p class="challenge-description">
-                            Investigate suspicious messages sent to crew members and identify 
-                            social engineering tactics used by space pirates.
+                            Investigate suspicious messages sent to crew members and identify social engineering 
+                            tactics used by space pirates.
                         </p>
                         <div class="challenge-meta">
                             <span class="difficulty beginner">Beginner</span>
@@ -139,14 +136,14 @@ custom_js:
                     </div>
                 </div>
 
-                <!-- Challenge 3: Two-Factor Authentication -->
+                <!-- Challenge 3: Multi-Factor Defense -->
                 <div class="challenge-card locked" onclick="showRequirements('two-factor-auth')">
                     <div class="challenge-icon">🛡️</div>
-                    <div class="challenge-content">
+                    <div class="challenge-info">
                         <h3 class="challenge-title">Multi-Factor Defense</h3>
                         <p class="challenge-description">
-                            Configure and test two-factor authentication systems to prevent 
-                            unauthorized access to critical ship systems.
+                            Configure and analyze multi-factor authentication systems to prevent unauthorized 
+                            access attempts.
                         </p>
                         <div class="challenge-meta">
                             <span class="difficulty intermediate">Intermediate</span>
@@ -154,8 +151,8 @@ custom_js:
                             <span class="xp-reward">⭐ 250 XP</span>
                         </div>
                         <div class="challenge-skills">
-                            <span class="skill-tag">Authentication</span>
-                            <span class="skill-tag">Security Tokens</span>
+                            <span class="skill-tag">Multi-Factor Authentication</span>
+                            <span class="skill-tag">Security Protocols</span>
                             <span class="skill-tag">Access Control</span>
                         </div>
                     </div>
@@ -165,14 +162,14 @@ custom_js:
                     </div>
                 </div>
 
-                <!-- Challenge 4: Account Forensics -->
+                <!-- Challenge 4: Identity Breach Investigation -->
                 <div class="challenge-card locked" onclick="showRequirements('account-forensics')">
                     <div class="challenge-icon">🔬</div>
-                    <div class="challenge-content">
+                    <div class="challenge-info">
                         <h3 class="challenge-title">Identity Breach Investigation</h3>
                         <p class="challenge-description">
-                            Conduct a forensic investigation of compromised accounts to trace 
-                            the attack timeline and identify entry points.
+                            Conduct a comprehensive forensic investigation of a complex identity breach using 
+                            advanced analysis techniques.
                         </p>
                         <div class="challenge-meta">
                             <span class="difficulty intermediate">Intermediate</span>
@@ -217,28 +214,37 @@ custom_js:
 
         <!-- Right Panel: Resources -->
         <aside class="resources-panel">
+            <!-- FIXED: Quick Reference with proper spacing -->
             <div class="quick-reference">
                 <h3>📖 Quick Reference</h3>
-                <div class="reference-links">
-                    <a href="#" class="reference-link">
-                        <span class="link-icon">🔐</span>
-                        <span class="link-text">Password Security Guide</span>
-                    </a>
-                    <a href="#" class="reference-link">
-                        <span class="link-icon">🎭</span>
-                        <span class="link-text">Social Engineering Tactics</span>
-                    </a>
-                    <a href="#" class="reference-link">
-                        <span class="link-icon">🛡️</span>
-                        <span class="link-text">Multi-Factor Authentication</span>
-                    </a>
-                    <a href="#" class="reference-link">
-                        <span class="link-icon">🔬</span>
-                        <span class="link-text">Digital Forensics Basics</span>
-                    </a>
-                </div>
+                <ul class="reference-list">
+                    <li>
+                        <span class="reference-item">
+                            🔐 <a href="https://pages.nist.gov/800-63-3/" target="_blank">Password Security Guide</a>
+                        </span>
+                    </li>
+                    
+                    <li>
+                        <span class="reference-item">
+                            🎭 <a href="#" onclick="alert('Social Engineering guide coming soon!')">Social Engineering Tactics</a>
+                        </span>
+                    </li>
+                    
+                    <li>
+                        <span class="reference-item">
+                            🛡️ <a href="#" onclick="alert('MFA guide coming soon!')">Multi-Factor Authentication</a>
+                        </span>
+                    </li>
+                    
+                    <li>
+                        <span class="reference-item">
+                            🔬 <a href="#" onclick="alert('Forensics guide coming soon!')">Digital Forensics Basics</a>
+                        </span>
+                    </li>
+                </ul>
             </div>
             
+            <!-- ENHANCED: Progress Tracker -->
             <div class="progress-tracker">
                 <h3>📊 Your Progress</h3>
                 <div class="progress-stats">
@@ -261,100 +267,29 @@ custom_js:
                 </div>
             </div>
             
-            <div class="help-section">
-                <h3>❓ Need Help?</h3>
-                <div class="help-links">
-                    <button class="help-btn" onclick="showModuleGuide()">
-                        📖 Module Guide
-                    </button>
-                    <button class="help-btn" onclick="showTechnicalSupport()">
-                        🔧 Technical Support
-                    </button>
-                    <button class="help-btn" onclick="reportIssue()">
-                        🐛 Report Issue
-                    </button>
-                </div>
-            </div>
+            <!-- REMOVED: Need Help section completely removed -->
         </aside>
     </div>
 </div>
 
-<!-- Requirement Modal -->
-<div class="modal-overlay" id="requirementModal" style="display: none;">
+<!-- Requirements Modal -->
+<div id="requirementModal" class="modal" style="display: none;">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 id="requirementTitle">Challenge Locked</h2>
-            <button class="modal-close" onclick="closeRequirementModal()">✕</button>
+            <h3 id="requirementTitle">Challenge Requirements</h3>
+            <span class="close" onclick="closeRequirementModal()">&times;</span>
         </div>
         <div class="modal-body" id="requirementBody">
-            <!-- Dynamic content -->
+            <!-- Content will be populated by JavaScript -->
         </div>
         <div class="modal-footer">
-            <button class="modal-btn secondary" onclick="closeRequirementModal()">Close</button>
-            <button class="modal-btn primary" onclick="returnToBridge()">Return to Bridge</button>
+            <button onclick="closeRequirementModal()" class="btn-secondary">Close</button>
         </div>
     </div>
 </div>
 
 <style>
-.xis-communication-module {
-    background: rgba(0, 30, 60, 0.8);
-    border: 2px solid #ff0080;
-    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
-    padding: 1.5rem;
-    backdrop-filter: blur(10px);
-    margin-bottom: 1.5rem;
-}
-
-.xis-message-module h3 {
-    color: #ff8000;
-    font-family: 'Orbitron', sans-serif;
-    margin-bottom: 1rem;
-    text-shadow: 0 0 5px #ff8000;
-}
-
-.xis-message-module p {
-    color: #00ffff;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    margin-bottom: 1rem;
-}
-
-.mission-objectives, .learning-outcomes {
-    background: rgba(0, 20, 40, 0.8);
-    border: 2px solid #00ffff;
-    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
-    padding: 1.5rem;
-    backdrop-filter: blur(10px);
-    margin-bottom: 1.5rem;
-}
-
-.objectives-list, .outcomes-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.objectives-list li, .outcomes-list li {
-    margin-bottom: 0.75rem;
-    padding-left: 1.5rem;
-    position: relative;
-    line-height: 1.4;
-}
-
-.objectives-list li::before {
-    content: "🎯";
-    position: absolute;
-    left: 0;
-    top: 0;
-}
-
-.outcomes-list li::before {
-    content: "📚";
-    position: absolute;
-    left: 0;
-    top: 0;
-}
+/* Module Interface Styling */
 .module-interface {
     background: 
         radial-gradient(circle at 15% 85%, rgba(0, 255, 255, 0.05) 0%, transparent 50%),
@@ -378,6 +313,30 @@ custom_js:
     border: 2px solid #00ffff;
     margin: 1rem 0;
     clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 30px 100%, 0 calc(100% - 30px));
+}
+
+/* FIXED: Return to Bridge button styling */
+.nav-btn.back {
+    background: linear-gradient(135deg, #00ffff, #0080ff);
+    color: #000;
+    border: 2px solid #00ffff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    cursor: pointer;
+}
+
+.nav-btn.back:hover {
+    background: linear-gradient(135deg, #00ff80, #00ffff);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+    transform: translateY(-1px);
 }
 
 .module-main {
@@ -524,6 +483,112 @@ custom_js:
     font-size: 0.9rem;
 }
 
+/* FIXED: Quick Reference spacing */
+.quick-reference {
+    background: rgba(0, 20, 40, 0.8);
+    border: 1px solid #00ffff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.quick-reference h3 {
+    color: #00ffff;
+    font-family: 'Orbitron', sans-serif;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #00ffff;
+    padding-bottom: 0.5rem;
+}
+
+.reference-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.reference-list li {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: rgba(0, 255, 255, 0.05);
+    border-radius: 4px;
+    border-left: 3px solid #00ffff;
+    transition: all 0.3s ease;
+}
+
+.reference-list li:hover {
+    background: rgba(0, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.reference-list li:last-child {
+    margin-bottom: 0;
+}
+
+.reference-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #ffffff;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem;
+}
+
+.reference-item a {
+    color: #00ffff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.reference-item a:hover {
+    color: #ffff00;
+    text-shadow: 0 0 5px #ffff00;
+}
+
+/* ENHANCED: Progress Tracker */
+.progress-tracker {
+    background: rgba(0, 40, 20, 0.8);
+    border: 1px solid #00ff80;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.progress-tracker h3 {
+    color: #00ff80;
+    font-family: 'Orbitron', sans-serif;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #00ff80;
+    padding-bottom: 0.5rem;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0, 255, 128, 0.2);
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+}
+
+.stat-label {
+    color: #ffffff;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem;
+}
+
+.stat-value {
+    color: #00ff80;
+    font-weight: bold;
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* REMOVED: Help section hidden */
+.help-section {
+    display: none !important;
+}
+
 @media (max-width: 1200px) {
     .module-main {
         grid-template-columns: 1fr;
@@ -547,9 +612,218 @@ custom_js:
         justify-content: center;
     }
 }
+/* ADD these styles to the existing <style> section in identity-defense.html */
+
+/* Fix: Identity Defense Grid Container */
+.xis-communication-module {
+    background: rgba(0, 30, 60, 0.8);
+    border: 2px solid #00ffff;
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.xis-communication-module h3 {
+    color: #ff8000;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 10px #ff8000;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.xis-communication-module p {
+    color: #00ffff;
+    font-family: 'Share Tech Mono', monospace;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.xis-communication-module p:last-child {
+    margin-bottom: 0;
+}
+
+/* Fix: Mission Objectives Container */
+.mission-objectives {
+    background: rgba(0, 40, 20, 0.8);
+    border: 2px solid #00ff80;
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.mission-objectives h3 {
+    color: #00ff80;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 10px #00ff80;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid #00ff80;
+    padding-bottom: 0.5rem;
+}
+
+.objectives-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.objectives-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    background: rgba(0, 255, 128, 0.05);
+    border-radius: 6px;
+    border-left: 3px solid #00ff80;
+    transition: all 0.3s ease;
+}
+
+.objectives-list li:hover {
+    background: rgba(0, 255, 128, 0.1);
+    transform: translateX(3px);
+}
+
+.objectives-list li:last-child {
+    margin-bottom: 0;
+}
+
+.objective-icon {
+    font-size: 1.2rem;
+    margin-top: 0.1rem;
+    flex-shrink: 0;
+}
+
+.objective-text {
+    color: #ffffff;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Fix: XIS Avatar styling */
+.xis-avatar-module {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #00ffff, #0080ff);
+    position: relative;
+    margin-bottom: 1rem;
+    animation: pulse 2s infinite;
+}
+
+.avatar-core-module {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: #ffffff;
+    border-radius: 50%;
+    animation: glow 3s ease-in-out infinite alternate;
+}
+
+.avatar-ring-module {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border: 2px solid rgba(0, 255, 255, 0.5);
+    border-radius: 50%;
+    animation: rotate 4s linear infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 255, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.8); }
+}
+
+@keyframes glow {
+    from { opacity: 0.7; }
+    to { opacity: 1; }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Ensure proper layout for briefing panel */
+.briefing-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* Fix spacing for better mobile experience */
+@media (max-width: 1200px) {
+    .xis-communication-module,
+    .mission-objectives {
+        margin-bottom: 1rem;
+    }
+}
+
 </style>
 
 <script>
+// Enhanced progress tracking
+function updateProgressDisplay() {
+    if (window.userProgressManager) {
+        const progress = window.userProgressManager.getProgress();
+        const identityModule = progress.modules['identity-defense'];
+        
+        if (identityModule) {
+            // Update completion count
+            const completedCount = document.getElementById('completedCount');
+            if (completedCount) {
+                completedCount.textContent = `${identityModule.progress}/${identityModule.total}`;
+            }
+            
+            // Update XP earned (estimate 150 XP per challenge)
+            const earnedXP = document.getElementById('earnedXP');
+            if (earnedXP) {
+                const totalEarned = identityModule.progress * 150;
+                earnedXP.textContent = `${totalEarned}/900`;
+            }
+            
+            // Update module percentage
+            const modulePercent = document.getElementById('modulePercent');
+            if (modulePercent) {
+                const percentage = Math.round((identityModule.progress / identityModule.total) * 100);
+                modulePercent.textContent = `${percentage}%`;
+            }
+            
+            // Update module progress bar
+            const moduleProgress = document.getElementById('moduleProgress');
+            if (moduleProgress) {
+                const percentage = (identityModule.progress / identityModule.total) * 100;
+                moduleProgress.style.width = percentage + '%';
+            }
+            
+            // Update system status
+            const statusValue = document.querySelector('.status-value');
+            if (statusValue && identityModule.completed) {
+                statusValue.textContent = 'ONLINE';
+                statusValue.className = 'status-value online';
+                statusValue.style.color = '#00ff00';
+            }
+            
+            console.log('📊 Progress display updated:', identityModule);
+        }
+    }
+}
+
 function enterChallenge(challengeId) {
     console.log('🚀 Entering challenge:', challengeId);
     
@@ -610,24 +884,25 @@ function closeRequirementModal() {
     document.getElementById('requirementModal').style.display = 'none';
 }
 
+// Enhanced return to bridge function
 function returnToBridge() {
+    console.log('🛸 Returning to bridge from Identity Defense...');
     window.location.href = '../bridge.html';
 }
 
-function showModuleGuide() {
-    alert('Module guide will be implemented in the next phase!');
-}
-
-function showTechnicalSupport() {
-    alert('Technical support will be implemented in the next phase!');
-}
-
-function reportIssue() {
-    alert('Issue reporting will be implemented in the next phase!');
-}
-
-// Initialize page
+// Update progress on page load and periodically
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🔐 Identity Defense Grid module loaded');
+    updateProgressDisplay();
+    
+    // Check for progress updates every 5 seconds
+    setInterval(updateProgressDisplay, 5000);
+});
+
+// Listen for storage changes (when progress is updated from other pages)
+window.addEventListener('storage', function(e) {
+    if (e.key === 'navigator-user-progress') {
+        updateProgressDisplay();
+    }
 });
 </script>
