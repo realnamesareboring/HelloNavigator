@@ -12,7 +12,8 @@ class TerminalEngine {
         this.isLocked = false;
         this.outputBuffer = [];
         this.challengeData = null;
-        this.userScrolling = false; // ADD THIS LINE
+        this.userScrolling = false;
+        this.userInteracting = false;
         
         this.init();
     }
@@ -26,8 +27,7 @@ class TerminalEngine {
         // Setup terminal interface
         this.setupTerminalInterface();
         
-        // Load challenge-specific commands
-        this.loadChallengeCommands();
+        // ✅ REMOVED: this.loadChallengeCommands() - Now handled by dynamic-challenge-engine.js
         
         console.log('✅ Terminal Engine ready');
     }
@@ -36,33 +36,32 @@ class TerminalEngine {
     // TERMINAL INTERFACE SETUP
     // =============================================================================
 
-// In assets/js/terminal-engine.js
-// FIND the setupTerminalInterface() method and REPLACE with this clean version:
-
     setupTerminalInterface() {
         const workspace = document.getElementById('challengeWorkspace');
         if (!workspace) return;
 
-        // CLEAN VERSION - No header with colored buttons
+        // Clean terminal interface without hardcoded header buttons
         workspace.innerHTML = `
             <div class="terminal-container">
                 <div class="terminal-body">
                     <div class="terminal-output" id="terminalOutput">
-                        <div class="boot-sequence">
-                            <div class="boot-line">Navigator OS v2.4.1 - Cybersecurity Terminal</div>
-                            <div class="boot-line">Initializing secure connection...</div>
-                            <div class="boot-line">Loading challenge environment...</div>
-                            <div class="boot-line">Ready for commands.</div>
-                            <div class="boot-line">&nbsp;</div>
-                            <div class="boot-line">Type 'help' for available commands.</div>
-                            <div class="boot-line">&nbsp;</div>
+                        <div class="terminal-line welcome">
+                            <span class="success-text">Navigator Terminal v2.1.0</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="info-text">Cybersecurity Challenge Environment</span>
+                        </div>
+                        <div class="terminal-line">
+                            Type <code>help</code> for available commands.
+                        </div>
+                        <div class="terminal-line prompt-line">
+                            <span class="terminal-prompt">navigator@ctf:~$</span>
                         </div>
                     </div>
-                    
                     <div class="terminal-input-container">
-                        <span class="terminal-prompt" id="terminalPrompt">navigator@uss-navigator:~$ </span>
-                        <input type="text" class="terminal-input" id="terminalInput" 
-                            placeholder="Enter command..." autocomplete="off" spellcheck="false">
+                        <span class="terminal-prompt" id="terminalPrompt">navigator@ctf:~$</span>
+                        <input type="text" id="terminalInput" class="terminal-input" 
+                               placeholder="Enter command..." autocomplete="off" spellcheck="false">
                     </div>
                 </div>
             </div>
@@ -70,82 +69,59 @@ class TerminalEngine {
 
         this.setupInputHandlers();
         this.setupScrollBehavior();
-        this.focusTerminal();
     }
 
     setupInputHandlers() {
         const input = document.getElementById('terminalInput');
         if (!input) return;
 
+        // Handle command submission
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                this.processCommand(input.value.trim());
-                input.value = '';
+                e.preventDefault();
+                const command = input.value.trim();
+                if (command) {
+                    this.processCommand(command);
+                    input.value = '';
+                }
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                this.navigateHistory('up');
+                this.navigateHistory(-1);
             } else if (e.key === 'ArrowDown') {
                 e.preventDefault();
-                this.navigateHistory('down');
+                this.navigateHistory(1);
             } else if (e.key === 'Tab') {
                 e.preventDefault();
-                this.autoComplete(input.value);
+                this.handleTabCompletion(input);
             }
         });
 
-        // IMPROVED: Only focus on input area clicks, not entire terminal
-        input.addEventListener('click', () => {
+        // Focus management
+        this.focusTerminal();
+        
+        // Auto-focus when clicking on terminal
+        document.getElementById('terminalOutput')?.addEventListener('click', () => {
             this.focusTerminal();
         });
-        
-        // IMPROVED: Only focus when clicking the input container, not output area
-        const inputContainer = input.closest('.terminal-input-container');
-        if (inputContainer) {
-            inputContainer.addEventListener('click', () => {
-                this.focusTerminal();
-            });
-        }
     }
 
     setupScrollBehavior() {
         const output = document.getElementById('terminalOutput');
         if (!output) return;
-        
+
+        // Track user interaction to prevent auto-scroll interference
         let scrollTimeout;
-        let userIsInteracting = false;
         
-        // Track when user is actively scrolling/interacting
-        output.addEventListener('scroll', () => {
-            userIsInteracting = true;
-            clearTimeout(scrollTimeout);
-            
-            // Only reset if user scrolls all the way to bottom
-            scrollTimeout = setTimeout(() => {
-                const isAtBottom = output.scrollTop + output.clientHeight >= output.scrollHeight - 5;
-                if (isAtBottom) {
-                    userIsInteracting = false;
-                }
-            }, 2000); // Give user time to read
-        });
-        
-        // Prevent auto-scroll during text selection or clicking
-        output.addEventListener('mousedown', (e) => {
-            userIsInteracting = true;
-        });
-        
-        output.addEventListener('selectstart', () => {
-            userIsInteracting = true;
-        });
-        
-        // Store the flag on the terminal engine instance
-        this.userInteracting = false;
-        
-        // Update the user interaction state
         const updateInteractionState = (state) => {
             this.userInteracting = state;
-            userIsInteracting = state;
+            clearTimeout(scrollTimeout);
+            if (state) {
+                scrollTimeout = setTimeout(() => {
+                    this.userInteracting = false;
+                }, 2000);
+            }
         };
-        
+
         output.addEventListener('scroll', () => updateInteractionState(true));
         output.addEventListener('mousedown', () => updateInteractionState(true));
         output.addEventListener('selectstart', () => updateInteractionState(true));
@@ -157,6 +133,10 @@ class TerminalEngine {
 
     processCommand(commandLine) {
         if (!commandLine) return;
+        if (this.isLocked) {
+            this.addOutput('[ERROR] Terminal is locked', 'error');
+            return;
+        }
 
         // Add to history
         this.history.unshift(commandLine);
@@ -164,7 +144,7 @@ class TerminalEngine {
         this.historyIndex = -1;
 
         // Parse command
-        const parts = commandLine.split(' ');
+        const parts = commandLine.trim().split(/\s+/);
         const command = parts[0].toLowerCase();
         const args = parts.slice(1);
 
@@ -179,45 +159,59 @@ class TerminalEngine {
                     this.addOutput(result);
                 }
             } catch (error) {
-                this.addOutput(`Error: ${error.message}`, 'error');
+                this.addOutput(`[ERROR] Command execution failed: ${error.message}`, 'error');
                 console.error('Command execution error:', error);
             }
         } else {
-            this.addOutput(`Command not found: ${command}. Type 'help' for available commands.`, 'error');
+            this.addOutput(`[ERROR] Command not found: ${command}. Type 'help' for available commands.`, 'error');
         }
 
         this.scrollToBottom();
     }
 
-    addOutput(text, type = 'output') {
-        const output = document.getElementById('terminalOutput');
-        if (!output) return;
+    navigateHistory(direction) {
+        const input = document.getElementById('terminalInput');
+        if (!input || this.history.length === 0) return;
 
-        const line = document.createElement('div');
-        line.className = `terminal-line ${type}`;
-        line.innerHTML = this.formatOutput(text);
+        this.historyIndex += direction;
         
-        output.appendChild(line);
-        this.scrollToBottom();
+        if (this.historyIndex < 0) {
+            this.historyIndex = -1;
+            input.value = '';
+        } else if (this.historyIndex >= this.history.length) {
+            this.historyIndex = this.history.length - 1;
+            input.value = this.history[this.historyIndex];
+        } else {
+            input.value = this.history[this.historyIndex];
+        }
     }
 
-    formatOutput(text) {
-        // Format special characters and colors
-        return text
-            .replace(/\[SUCCESS\]/g, '<span class="success-text">[SUCCESS]</span>')
-            .replace(/\[ERROR\]/g, '<span class="error-text">[ERROR]</span>')
-            .replace(/\[WARNING\]/g, '<span class="warning-text">[WARNING]</span>')
-            .replace(/\[INFO\]/g, '<span class="info-text">[INFO]</span>')
-            .replace(/`([^`]+)`/g, '<code>$1</code>')
-            .replace(/\n/g, '<br>'); // ADD THIS LINE - converts newlines to HTML breaks
+    handleTabCompletion(input) {
+        const currentValue = input.value;
+        const parts = currentValue.split(' ');
+        const lastPart = parts[parts.length - 1];
+        
+        // Get available commands that start with the current input
+        const matches = Array.from(this.commands.keys()).filter(cmd => 
+            cmd.startsWith(lastPart.toLowerCase())
+        );
+        
+        if (matches.length === 1) {
+            // Single match - complete it
+            parts[parts.length - 1] = matches[0];
+            input.value = parts.join(' ') + ' ';
+        } else if (matches.length > 1) {
+            // Multiple matches - show them
+            this.addOutput(`Available completions: ${matches.join(', ')}`);
+        }
     }
 
     // =============================================================================
-    // DEFAULT COMMANDS
+    // DEFAULT COMMANDS (GENERIC ONLY)
     // =============================================================================
 
     registerDefaultCommands() {
-        // Help command
+        // Help command - shows all available commands
         this.commands.set('help', () => {
             const availableCommands = Array.from(this.commands.keys()).sort();
             let output = 'Available commands:\n\n';
@@ -228,6 +222,7 @@ class TerminalEngine {
             });
             
             output += '\nType `man <command>` for detailed information about a specific command.';
+            output += '\nChallenge-specific commands will be available after loading evidence files.';
             return output;
         });
 
@@ -247,7 +242,7 @@ class TerminalEngine {
             let output = '';
             files.forEach(file => {
                 const icon = file.type === 'directory' ? '📁' : '📄';
-                const permissions = file.permissions || 'rwxr-xr-x';
+                const permissions = file.permissions || '-rw-r--r--';
                 const size = file.size || '1024';
                 output += `${permissions} ${icon} ${file.name.padEnd(20)} ${size}\n`;
             });
@@ -259,6 +254,7 @@ class TerminalEngine {
         this.commands.set('cd', (args) => {
             if (args.length === 0) {
                 this.currentDirectory = '/home/navigator';
+                this.updatePrompt();
                 return '';
             }
             
@@ -267,7 +263,7 @@ class TerminalEngine {
                 const parts = this.currentDirectory.split('/');
                 if (parts.length > 2) {
                     parts.pop();
-                    this.currentDirectory = parts.join('/');
+                    this.currentDirectory = parts.join('/') || '/';
                 }
             } else if (target.startsWith('/')) {
                 this.currentDirectory = target;
@@ -275,6 +271,8 @@ class TerminalEngine {
                 this.currentDirectory += `/${target}`;
             }
             
+            // Clean up path
+            this.currentDirectory = this.currentDirectory.replace(/\/+/g, '/');
             this.updatePrompt();
             return '';
         });
@@ -284,7 +282,50 @@ class TerminalEngine {
             return this.currentDirectory;
         });
 
-        // Display file contents
+        // Display current user
+        this.commands.set('whoami', () => {
+            return 'navigator';
+        });
+
+        // Display date
+        this.commands.set('date', () => {
+            return new Date().toISOString();
+        });
+
+        // Display environment variables
+        this.commands.set('env', () => {
+            let output = 'Environment Variables:\n\n';
+            output += `USER=navigator\n`;
+            output += `HOME=/home/navigator\n`;
+            output += `PWD=${this.currentDirectory}\n`;
+            output += `PATH=/usr/local/bin:/usr/bin:/bin\n`;
+            output += `TERM=xterm-256color\n`;
+            output += `SHELL=/bin/bash\n`;
+            
+            Object.entries(this.environment).forEach(([key, value]) => {
+                output += `${key}=${value}\n`;
+            });
+            
+            return output;
+        });
+
+        // Echo command
+        this.commands.set('echo', (args) => {
+            return args.join(' ');
+        });
+
+        // Manual pages
+        this.commands.set('man', (args) => {
+            if (args.length === 0) {
+                return '[ERROR] Usage: man <command>\n\nExample: man ls';
+            }
+            
+            const command = args[0];
+            const manPage = this.getManPage(command);
+            return manPage || `[ERROR] No manual entry for ${command}`;
+        });
+
+        // Display file contents (generic version - challenge-specific files handled by dynamic engine)
         this.commands.set('cat', (args) => {
             if (args.length === 0) {
                 return '[ERROR] Usage: cat <filename>';
@@ -294,245 +335,67 @@ class TerminalEngine {
             const file = this.findFile(filename);
             
             if (!file) {
-                return `[ERROR] File not found: ${filename}`;
+                return `[ERROR] File '${filename}' not found`;
             }
             
-            return file.content || '[INFO] Binary file - content not displayable';
+            if (file.type === 'directory') {
+                return `[ERROR] '${filename}' is a directory`;
+            }
+            
+            return file.content || `[INFO] ${filename} is a binary file`;
         });
 
-        // Network scanning (basic)
+        // Network mapping tool (simulated)
         this.commands.set('nmap', (args) => {
             if (args.length === 0) {
-                return '[ERROR] Usage: nmap <target>';
+                return '[ERROR] Usage: nmap <target>\n\nExample: nmap 192.168.1.1';
             }
             
             const target = args[0];
-            return this.simulateNmapScan(target);
-        });
-
-        // Manual pages
-        this.commands.set('man', (args) => {
-            if (args.length === 0) {
-                return '[ERROR] Usage: man <command>';
-            }
-            
-            const command = args[0];
-            return this.getManPage(command);
-        });
-
-        // Echo command
-        this.commands.set('echo', (args) => {
-            return args.join(' ');
-        });
-
-        // Environment variables
-        this.commands.set('env', () => {
-            let output = 'Environment variables:\n\n';
-            for (const [key, value] of Object.entries(this.environment)) {
-                output += `${key}=${value}\n`;
-            }
-            return output;
+            return `[INFO] Starting Nmap scan on ${target}...\n\nNmap scan report for ${target}\nHost is up (0.001s latency).\nPORT     STATE SERVICE\n22/tcp   open  ssh\n80/tcp   open  http\n443/tcp  open  https\n\nNmap done: 1 IP address scanned`;
         });
     }
 
     // =============================================================================
-    // CHALLENGE-SPECIFIC COMMANDS
+    // OUTPUT AND DISPLAY
     // =============================================================================
 
-    loadChallengeCommands() {
-        // This will be overridden by specific challenges
-        console.log('Loading challenge-specific commands...');
-    }
+    addOutput(text, type = 'output') {
+        const output = document.getElementById('terminalOutput');
+        if (!output) return;
 
-    registerCommand(name, handler, description = '') {
-        this.commands.set(name.toLowerCase(), handler);
-        if (description) {
-            this.commandDescriptions = this.commandDescriptions || {};
-            this.commandDescriptions[name.toLowerCase()] = description;
-        }
-    }
-
-    // =============================================================================
-    // SIMULATION HELPERS
-    // =============================================================================
-
-    simulateNmapScan(target) {
-        const ports = [
-            { port: 22, service: 'ssh', state: 'open' },
-            { port: 80, service: 'http', state: 'open' },
-            { port: 443, service: 'https', state: 'open' },
-            { port: 3389, service: 'rdp', state: 'filtered' },
-            { port: 1433, service: 'mssql', state: 'closed' }
-        ];
-
-        let output = `Starting Nmap scan on ${target}\n\n`;
-        output += 'PORT     STATE    SERVICE\n';
+        const line = document.createElement('div');
+        line.className = `terminal-line ${type}`;
+        line.innerHTML = this.formatOutput(text);
         
-        ports.forEach(port => {
-            const state = port.state.toUpperCase().padEnd(8);
-            output += `${port.port}/tcp  ${state} ${port.service}\n`;
-        });
+        output.appendChild(line);
+        this.scrollToBottom();
+    }
+
+    formatOutput(text) {
+        if (!text) return '';
         
-        output += '\nNmap scan completed.';
-        return output;
-    }
-
-    simulateProgress(operation, duration = 3000) {
-        const steps = [
-            '[INFO] Initializing...',
-            '[INFO] Connecting to target...',
-            '[INFO] Analyzing response...',
-            '[INFO] Processing results...',
-            '[SUCCESS] Operation completed.'
-        ];
-
-        let currentStep = 0;
-        const interval = setInterval(() => {
-            if (currentStep < steps.length) {
-                this.addOutput(steps[currentStep]);
-                currentStep++;
-            } else {
-                clearInterval(interval);
-            }
-        }, duration / steps.length);
-    }
-
-    // =============================================================================
-    // UTILITY FUNCTIONS
-    // =============================================================================
-
-    getCurrentDirectoryFiles() {
-        // Return simulated file system based on current directory
-        const filesystem = {
-            '/home/navigator': [
-                { name: 'documents', type: 'directory', permissions: 'drwxr-xr-x', size: '4096' },
-                { name: 'tools', type: 'directory', permissions: 'drwxr-xr-x', size: '4096' },
-                { name: 'readme.txt', type: 'file', permissions: '-rw-r--r--', size: '1024', content: 'Welcome to the Navigator Terminal!\nUse this environment to complete cybersecurity challenges.' }
-            ],
-            '/home/navigator/tools': [
-                { name: 'hashcat', type: 'file', permissions: '-rwxr-xr-x', size: '2048' },
-                { name: 'nmap', type: 'file', permissions: '-rwxr-xr-x', size: '1536' },
-                { name: 'wireshark', type: 'file', permissions: '-rwxr-xr-x', size: '4096' }
-            ]
-        };
-
-        return filesystem[this.currentDirectory] || [];
-    }
-
-    findFile(filename) {
-        const files = this.getCurrentDirectoryFiles();
-        return files.find(file => file.name === filename);
-    }
-
-    getCommandDescription(command) {
-        const descriptions = {
-            'help': 'Show available commands',
-            'clear': 'Clear the terminal screen',
-            'ls': 'List directory contents',
-            'cd': 'Change directory',
-            'pwd': 'Print working directory',
-            'cat': 'Display file contents',
-            'nmap': 'Network discovery and security auditing',
-            'man': 'Display manual page for command',
-            'echo': 'Display text',
-            'env': 'Show environment variables'
-        };
-
-        return descriptions[command] || 'No description available';
-    }
-
-    getManPage(command) {
-        const manPages = {
-            'nmap': `NAME
-        nmap - Network discovery and security auditing tool
-
-SYNOPSIS
-        nmap [options] <target>
-
-DESCRIPTION
-        Nmap is a network scanning tool used to discover hosts and services on a network.
-        
-OPTIONS
-        -sS     TCP SYN scan (default)
-        -sU     UDP scan
-        -p      Specify port range
-        
-EXAMPLES
-        nmap 192.168.1.1
-        nmap -p 80,443 target.com`,
-
-            'ls': `NAME
-        ls - list directory contents
-        
-SYNOPSIS
-        ls [options] [directory]
-        
-DESCRIPTION
-        List information about files and directories.`,
-        };
-
-        return manPages[command] || `No manual entry for ${command}`;
-    }
-
-    navigateHistory(direction) {
-        const input = document.getElementById('terminalInput');
-        if (!input) return;
-
-        if (direction === 'up') {
-            if (this.historyIndex < this.history.length - 1) {
-                this.historyIndex++;
-                input.value = this.history[this.historyIndex];
-            }
-        } else if (direction === 'down') {
-            if (this.historyIndex > 0) {
-                this.historyIndex--;
-                input.value = this.history[this.historyIndex];
-            } else if (this.historyIndex === 0) {
-                this.historyIndex = -1;
-                input.value = '';
-            }
-        }
-    }
-
-    autoComplete(partial) {
-        const availableCommands = Array.from(this.commands.keys());
-        const matches = availableCommands.filter(cmd => cmd.startsWith(partial.toLowerCase()));
-        
-        if (matches.length === 1) {
-            const input = document.getElementById('terminalInput');
-            if (input) {
-                input.value = matches[0];
-            }
-        } else if (matches.length > 1) {
-            this.addOutput(`Available completions: ${matches.join(', ')}`);
-        }
-    }
-
-    getPrompt() {
-        const user = 'navigator';
-        const host = 'uss-navigator';
-        const dir = this.currentDirectory.split('/').pop() || this.currentDirectory;
-        return `${user}@${host}:${dir}$ `;
-    }
-
-    updatePrompt() {
-        const promptElement = document.getElementById('terminalPrompt');
-        if (promptElement) {
-            promptElement.textContent = this.getPrompt();
-        }
-    }
-
-    focusTerminal() {
-        const input = document.getElementById('terminalInput');
-        if (input && !this.isLocked) {
-            input.focus();
-        }
+        // Format special characters and colors
+        return text
+            .replace(/\[SUCCESS\]/g, '<span class="success-text">[SUCCESS]</span>')
+            .replace(/\[ERROR\]/g, '<span class="error-text">[ERROR]</span>')
+            .replace(/\[WARNING\]/g, '<span class="warning-text">[WARNING]</span>')
+            .replace(/\[INFO\]/g, '<span class="info-text">[INFO]</span>')
+            .replace(/`([^`]+)`/g, '<code>$1</code>')
+            .replace(/\n/g, '<br>');
     }
 
     clearTerminal() {
         const output = document.getElementById('terminalOutput');
         if (output) {
-            output.innerHTML = '';
+            output.innerHTML = `
+                <div class="terminal-line welcome">
+                    <span class="success-text">Navigator Terminal v2.1.0</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="info-text">Terminal cleared. Type 'help' for available commands.</span>
+                </div>
+            `;
         }
     }
 
@@ -547,6 +410,31 @@ DESCRIPTION
                     behavior: 'smooth'
                 });
             }
+        }
+    }
+
+    // =============================================================================
+    // TERMINAL STATE MANAGEMENT
+    // =============================================================================
+
+    getPrompt() {
+        const shortPath = this.currentDirectory.replace('/home/navigator', '~');
+        return `navigator@ctf:${shortPath}$ `;
+    }
+
+    updatePrompt() {
+        const promptElements = document.querySelectorAll('.terminal-prompt');
+        const promptText = this.getPrompt().slice(0, -2); // Remove "$ "
+        
+        promptElements.forEach(el => {
+            el.textContent = promptText;
+        });
+    }
+
+    focusTerminal() {
+        const input = document.getElementById('terminalInput');
+        if (input && !this.isLocked) {
+            setTimeout(() => input.focus(), 100);
         }
     }
 
@@ -575,91 +463,172 @@ DESCRIPTION
         this.historyIndex = -1;
         this.currentDirectory = '/home/navigator';
         this.environment = {};
-        
-        // Re-display boot sequence
-        this.addOutput('Terminal reset. Ready for commands.');
         this.updatePrompt();
-    }
-
-    toggleFullscreen() {
-        const container = document.querySelector('.terminal-container');
-        if (container) {
-            container.classList.toggle('fullscreen');
-        }
+        
+        this.addOutput('[INFO] Challenge environment reset. Ready for new commands.');
     }
 
     // =============================================================================
-    // TOOL LOADING
+    // UTILITY FUNCTIONS
     // =============================================================================
 
-    loadTool(toolId) {
-        const tools = {
-            'hashcat': () => {
-                this.addOutput('[INFO] Loading Hashcat - Advanced password recovery utility');
-                this.registerCommand('hashcat', (args) => {
-                    return this.simulateHashcat(args);
-                }, 'Advanced password recovery utility');
-            },
-            'wireshark': () => {
-                this.addOutput('[INFO] Loading Wireshark - Network protocol analyzer');
-                this.registerCommand('tshark', (args) => {
-                    return this.simulateWireshark(args);
-                }, 'Network packet analyzer');
-            },
-            'john': () => {
-                this.addOutput('[INFO] Loading John the Ripper - Password cracker');
-                this.registerCommand('john', (args) => {
-                    return this.simulateJohn(args);
-                }, 'Password cracking tool');
-            }
+    getCurrentDirectoryFiles() {
+        // Simulated file system
+        const filesystem = {
+            '/home/navigator': [
+                { name: 'documents', type: 'directory', permissions: 'drwxr-xr-x', size: '4096' },
+                { name: 'tools', type: 'directory', permissions: 'drwxr-xr-x', size: '4096' },
+                { name: 'readme.txt', type: 'file', permissions: '-rw-r--r--', size: '1024', 
+                  content: 'Welcome to the Navigator Terminal!\nUse this environment to complete cybersecurity challenges.\n\nType "help" to see available commands.' }
+            ],
+            '/home/navigator/documents': [
+                { name: 'notes.txt', type: 'file', permissions: '-rw-r--r--', size: '512',
+                  content: 'Investigation Notes:\n- Always examine evidence files carefully\n- Use grep to search for patterns\n- Look for anomalies in logs' }
+            ],
+            '/home/navigator/tools': [
+                { name: 'hashcat', type: 'file', permissions: '-rwxr-xr-x', size: '2048' },
+                { name: 'nmap', type: 'file', permissions: '-rwxr-xr-x', size: '1536' },
+                { name: 'wireshark', type: 'file', permissions: '-rwxr-xr-x', size: '4096' }
+            ]
         };
 
-        if (tools[toolId]) {
-            tools[toolId]();
-        } else {
-            this.addOutput(`[ERROR] Unknown tool: ${toolId}`);
+        return filesystem[this.currentDirectory] || [];
+    }
+
+    findFile(filename) {
+        const files = this.getCurrentDirectoryFiles();
+        return files.find(file => file.name === filename);
+    }
+
+    getCommandDescription(command) {
+        const descriptions = {
+            'help': 'Show available commands',
+            'clear': 'Clear the terminal screen',
+            'ls': 'List directory contents',
+            'cd': 'Change directory',
+            'pwd': 'Print working directory',
+            'cat': 'Display file contents',
+            'grep': 'Search for patterns in files',
+            'analyze': 'Run security analysis on files',
+            'submit': 'Submit discovered flags',
+            'nmap': 'Network discovery and security auditing',
+            'man': 'Display manual page for command',
+            'echo': 'Display text',
+            'env': 'Show environment variables',
+            'whoami': 'Print current user',
+            'date': 'Show current date and time'
+        };
+
+        return descriptions[command] || 'No description available';
+    }
+
+    getManPage(command) {
+        const manPages = {
+            'ls': `NAME
+       ls - list directory contents
+
+SYNOPSIS
+       ls [options] [directory]
+
+DESCRIPTION
+       List information about files and directories.
+
+OPTIONS
+       No options supported in this simulation.`,
+
+            'cat': `NAME
+       cat - concatenate files and print on standard output
+
+SYNOPSIS
+       cat [file]
+
+DESCRIPTION
+       Display the contents of a file.`,
+
+            'grep': `NAME
+       grep - search text patterns in files
+
+SYNOPSIS
+       grep [pattern] [file]
+
+DESCRIPTION
+       Search for a pattern in a file and display matching lines.`,
+
+            'nmap': `NAME
+       nmap - Network discovery and security auditing tool
+
+SYNOPSIS
+       nmap [options] <target>
+
+DESCRIPTION
+       Nmap is used to discover hosts and services on a network.`
+        };
+
+        return manPages[command];
+    }
+
+    // =============================================================================
+    // PUBLIC API FOR DYNAMIC CHALLENGE ENGINE
+    // =============================================================================
+
+    // Method for dynamic challenge engine to add commands
+    addCommand(name, handler) {
+        this.commands.set(name, handler);
+        console.log(`✅ Added command: ${name}`);
+    }
+
+    // Method for dynamic challenge engine to remove commands
+    removeCommand(name) {
+        if (this.commands.has(name)) {
+            this.commands.delete(name);
+            console.log(`🗑️ Removed command: ${name}`);
         }
     }
 
-    simulateHashcat(args) {
-        if (args.length === 0) {
-            return `[INFO] Hashcat v6.2.6
-Usage: hashcat [options] hashfile [dictionary]
-
-Options:
-  -m    Hash type (0=MD5, 100=SHA1, 1000=NTLM)
-  -a    Attack mode (0=straight, 3=brute-force)
-  -o    Output file`;
-        }
-
-        // Simulate password cracking
-        setTimeout(() => {
-            this.addOutput('[INFO] Cracking in progress...');
-            setTimeout(() => {
-                this.addOutput('[SUCCESS] Password found: password123');
-            }, 2000);
-        }, 1000);
-
-        return '[INFO] Starting hashcat attack...';
+    // Method to get current command list
+    getCommands() {
+        return Array.from(this.commands.keys());
     }
 
-    simulateWireshark(args) {
-        return `[INFO] Wireshark packet capture analysis
-Packets captured: 1,337
-Protocols detected: HTTP, HTTPS, DNS, TCP, UDP
-Suspicious traffic: 3 connections to unknown hosts`;
+    // Method for challenges to set environment variables
+    setEnvironment(key, value) {
+        this.environment[key] = value;
     }
 
-    simulateJohn(args) {
-        return `[INFO] John the Ripper password cracker
-Loaded 1 password hash
-Trying dictionary attack...
-Password cracked: admin123`;
+    // Method to simulate typing (for tutorials)
+    simulateTyping(text, callback) {
+        const input = document.getElementById('terminalInput');
+        if (!input) return;
+
+        let i = 0;
+        const interval = setInterval(() => {
+            if (i < text.length) {
+                input.value += text.charAt(i);
+                i++;
+            } else {
+                clearInterval(interval);
+                if (callback) callback();
+            }
+        }, 100);
     }
 }
 
 // =============================================================================
-// GLOBAL INSTANCE
+// INITIALIZATION
 // =============================================================================
 
-window.terminalEngine = new TerminalEngine();
+// Initialize terminal engine when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Small delay to ensure all elements are ready
+    setTimeout(() => {
+        if (!window.terminalEngine) {
+            window.terminalEngine = new TerminalEngine();
+            console.log('🖥️ Terminal Engine initialized and ready for dynamic commands');
+        }
+    }, 100);
+});
+
+// Make TerminalEngine available globally for debugging
+window.TerminalEngine = TerminalEngine;
+
+console.log('🖥️ Terminal Engine script loaded');
