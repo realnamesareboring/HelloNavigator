@@ -1,5 +1,6 @@
 // =============================================================================
 // TERMINAL ENGINE - Interactive Cybersecurity Terminal Simulation
+// Enhanced with dynamic sizing and improved scroll behavior
 // =============================================================================
 
 class TerminalEngine {
@@ -15,6 +16,10 @@ class TerminalEngine {
         this.userScrolling = false;
         this.userInteracting = false;
         
+        // NEW: Dynamic sizing properties
+        this.commandCount = 0;
+        this.startHeight = 300;
+        
         this.init();
     }
 
@@ -26,8 +31,6 @@ class TerminalEngine {
         
         // Setup terminal interface
         this.setupTerminalInterface();
-        
-        // ✅ REMOVED: this.loadChallengeCommands() - Now handled by dynamic-challenge-engine.js
         
         console.log('✅ Terminal Engine ready');
     }
@@ -52,10 +55,7 @@ class TerminalEngine {
                             <span class="info-text">Cybersecurity Challenge Environment</span>
                         </div>
                         <div class="terminal-line">
-                            Type <code>help</code> for available commands.
-                        </div>
-                        <div class="terminal-line prompt-line">
-                            <span class="terminal-prompt">navigator@ctf:~$</span>
+                            <span class="info-text">Type <code>help</code> for available commands.</span>
                         </div>
                     </div>
                     <div class="terminal-input-container">
@@ -105,26 +105,30 @@ class TerminalEngine {
         });
     }
 
+    // ENHANCED: Better scroll behavior
     setupScrollBehavior() {
         const output = document.getElementById('terminalOutput');
         if (!output) return;
 
-        // Track user interaction to prevent auto-scroll interference
         let scrollTimeout;
-        
         const updateInteractionState = (state) => {
             this.userInteracting = state;
             clearTimeout(scrollTimeout);
-            if (state) {
-                scrollTimeout = setTimeout(() => {
-                    this.userInteracting = false;
-                }, 2000);
-            }
+            if (state) scrollTimeout = setTimeout(() => this.userInteracting = false, 2000);
         };
 
         output.addEventListener('scroll', () => updateInteractionState(true));
-        output.addEventListener('mousedown', () => updateInteractionState(true));
-        output.addEventListener('selectstart', () => updateInteractionState(true));
+        output.addEventListener('click', () => this.focusTerminal());
+    }
+
+    // NEW: Dynamic terminal sizing
+    updateTerminalHeight() {
+        const container = document.querySelector('.terminal-container');
+        if (!container) return;
+        
+        const newHeight = Math.min(this.startHeight + (this.commandCount * 20), 500);
+        container.style.height = `${newHeight}px`;
+        container.style.transition = 'height 0.3s ease';
     }
 
     // =============================================================================
@@ -137,6 +141,10 @@ class TerminalEngine {
             this.addOutput('[ERROR] Terminal is locked', 'error');
             return;
         }
+
+        // NEW: Track usage for dynamic sizing
+        this.commandCount++;
+        this.updateTerminalHeight();
 
         // Add to history
         this.history.unshift(commandLine);
@@ -163,7 +171,7 @@ class TerminalEngine {
                 console.error('Command execution error:', error);
             }
         } else {
-            this.addOutput(`[ERROR] Command not found: ${command}. Type 'help' for available commands.`, 'error');
+            this.addOutput(`bash: ${command}: command not found\nType 'help' for available commands.`, 'error');
         }
 
         this.scrollToBottom();
@@ -207,7 +215,7 @@ class TerminalEngine {
     }
 
     // =============================================================================
-    // DEFAULT COMMANDS (GENERIC ONLY)
+    // DEFAULT COMMANDS
     // =============================================================================
 
     registerDefaultCommands() {
@@ -223,6 +231,30 @@ class TerminalEngine {
             
             output += '\nType `man <command>` for detailed information about a specific command.';
             output += '\nChallenge-specific commands will be available after loading evidence files.';
+            return output;
+        });
+
+        // History command - shows recent command history
+        this.commands.set('history', (args) => {
+            if (this.history.length === 0) {
+                return 'No commands in history.';
+            }
+            
+            // Show last 50 commands (or all if fewer than 50)
+            const maxHistory = 50;
+            const startIndex = Math.max(0, this.history.length - maxHistory);
+            const recentHistory = this.history.slice(startIndex).reverse();
+            
+            let output = 'Command History:\n\n';
+            recentHistory.forEach((cmd, index) => {
+                const lineNumber = (this.history.length - recentHistory.length + index + 1);
+                output += `${String(lineNumber).padStart(4, ' ')}  ${cmd}\n`;
+            });
+            
+            if (this.history.length > maxHistory) {
+                output += `\n... showing last ${maxHistory} commands (${this.history.length} total)`;
+            }
+            
             return output;
         });
 
@@ -354,30 +386,6 @@ class TerminalEngine {
             const target = args[0];
             return `[INFO] Starting Nmap scan on ${target}...\n\nNmap scan report for ${target}\nHost is up (0.001s latency).\nPORT     STATE SERVICE\n22/tcp   open  ssh\n80/tcp   open  http\n443/tcp  open  https\n\nNmap done: 1 IP address scanned`;
         });
-
-        // History command - shows recent command history
-        this.commands.set('history', (args) => {
-            if (this.history.length === 0) {
-                return 'No commands in history.';
-            }
-            
-            // Show last 50 commands (or all if fewer than 50)
-            const maxHistory = 50;
-            const startIndex = Math.max(0, this.history.length - maxHistory);
-            const recentHistory = this.history.slice(startIndex).reverse();
-            
-            let output = 'Command History:\n\n';
-            recentHistory.forEach((cmd, index) => {
-                const lineNumber = (this.history.length - recentHistory.length + index + 1);
-                output += `${String(lineNumber).padStart(4, ' ')}  ${cmd}\n`;
-            });
-            
-            if (this.history.length > maxHistory) {
-                output += `\n... showing last ${maxHistory} commands (${this.history.length} total)`;
-            }
-            
-            return output;
-        });
     }
 
     // =============================================================================
@@ -417,21 +425,19 @@ class TerminalEngine {
                     <span class="success-text">Navigator Terminal v2.1.0</span>
                 </div>
                 <div class="terminal-line">
-                    <span class="info-text">Terminal cleared. Type 'help' for available commands.</span>
+                    <span class="info-text">Terminal cleared. Type <code>help</code> for available commands.</span>
                 </div>
             `;
         }
     }
 
+    // ENHANCED: Better scroll behavior
     scrollToBottom() {
-        // Only auto-scroll if user isn't actively reading/interacting
         if (!this.userInteracting) {
             const output = document.getElementById('terminalOutput');
             if (output) {
-                // Smooth scroll instead of instant jump
-                output.scrollTo({
-                    top: output.scrollHeight,
-                    behavior: 'smooth'
+                requestAnimationFrame(() => {
+                    output.scrollTop = output.scrollHeight;
                 });
             }
         }
@@ -527,6 +533,7 @@ class TerminalEngine {
     getCommandDescription(command) {
         const descriptions = {
             'help': 'Show available commands',
+            'history': 'Show command history',
             'clear': 'Clear the terminal screen',
             'ls': 'List directory contents',
             'cd': 'Change directory',
@@ -538,7 +545,6 @@ class TerminalEngine {
             'nmap': 'Network discovery and security auditing',
             'man': 'Display manual page for command',
             'echo': 'Display text',
-            'history': 'Show command history',
             'env': 'Show environment variables',
             'whoami': 'Print current user',
             'date': 'Show current date and time'
@@ -586,7 +592,16 @@ SYNOPSIS
        nmap [options] <target>
 
 DESCRIPTION
-       Nmap is used to discover hosts and services on a network.`
+       Nmap is used to discover hosts and services on a network.`,
+
+            'history': `NAME
+       history - show command history
+
+SYNOPSIS
+       history
+
+DESCRIPTION
+       Display the list of previously executed commands.`
         };
 
         return manPages[command];
