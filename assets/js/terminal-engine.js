@@ -354,6 +354,30 @@ class TerminalEngine {
             const target = args[0];
             return `[INFO] Starting Nmap scan on ${target}...\n\nNmap scan report for ${target}\nHost is up (0.001s latency).\nPORT     STATE SERVICE\n22/tcp   open  ssh\n80/tcp   open  http\n443/tcp  open  https\n\nNmap done: 1 IP address scanned`;
         });
+
+        // History command - shows recent command history
+        this.commands.set('history', (args) => {
+            if (this.history.length === 0) {
+                return 'No commands in history.';
+            }
+            
+            // Show last 50 commands (or all if fewer than 50)
+            const maxHistory = 50;
+            const startIndex = Math.max(0, this.history.length - maxHistory);
+            const recentHistory = this.history.slice(startIndex).reverse();
+            
+            let output = 'Command History:\n\n';
+            recentHistory.forEach((cmd, index) => {
+                const lineNumber = (this.history.length - recentHistory.length + index + 1);
+                output += `${String(lineNumber).padStart(4, ' ')}  ${cmd}\n`;
+            });
+            
+            if (this.history.length > maxHistory) {
+                output += `\n... showing last ${maxHistory} commands (${this.history.length} total)`;
+            }
+            
+            return output;
+        });
     }
 
     // =============================================================================
@@ -514,6 +538,7 @@ class TerminalEngine {
             'nmap': 'Network discovery and security auditing',
             'man': 'Display manual page for command',
             'echo': 'Display text',
+            'history': 'Show command history',
             'env': 'Show environment variables',
             'whoami': 'Print current user',
             'date': 'Show current date and time'
